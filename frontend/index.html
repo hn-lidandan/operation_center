@@ -421,28 +421,28 @@
         </div>
         <div class="container">
             <h1>Operation Center</h1>
-            <div class="main-content">
-                <div class="form-group">
-                    <label class="label">安装包：</label>
-                    <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
-                    <button onclick="handleProcess()" class="btn">载入</button>
-                </div>
-                <div id="loading" class="loading">处理中...</div>
-                <div class="result-container">
-                    <label class="label">版本信息：</label>
-                    <div id="result" class="result"></div>
+        <div class="main-content">
+            <div class="form-group">
+                <label class="label">安装包：</label>
+                <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
+                <button onclick="handleProcess()" class="btn">载入</button>
+            </div>
+            <div id="loading" class="loading">处理中...</div>
+            <div class="result-container">
+                <label class="label">版本信息：</label>
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+        
+        <div class="settings-content">
+            <div class="form-group">
+                <label class="label wide-label">配置本地化信息：</label>
+            </div>
+            <div class="settings-container">
+                <div id="settings-editor" class="settings-editor">
+                    <!-- 设置项将在这里动态生成 -->
                 </div>
             </div>
-            
-            <div class="settings-content">
-                <div class="form-group">
-                    <label class="label wide-label">配置本地化信息：</label>
-                </div>
-                <div class="settings-container">
-                    <div id="settings-editor" class="settings-editor">
-                        <!-- 设置项将在这里动态生成 -->
-                    </div>
-                </div>
                 <div class="buttons-container">
                     <button onclick="saveSettings()" class="btn">保存配置</button>
                     <button onclick="startInstall()" class="btn">安装</button>
@@ -578,7 +578,7 @@
                     <div class="upgrade-step" id="step-update">更新组件</div>
                     <div class="upgrade-step" id="step-finish">结束</div>
                 </div>
-            </div>
+        </div>
         </div>
     </div>
     <script type="module" src="/src/main.js"></script>

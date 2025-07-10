@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 配置axios基础URL - 使用相对路径，通过代理访问后端
 const api = axios.create({
-    baseURL: '/path',
+    baseURL: '',  // 移除 '/path' 前缀，使用相对路径
     headers: {
         'Content-Type': 'application/json'
     }
@@ -41,8 +41,6 @@ function switchTab(tabId) {
     } else if (tabId === 'upgrade-prepare') {
         document.querySelector('.upgrade-prepare-content').style.display = 'flex';
         document.getElementById('menu-upgrade-prepare').classList.add('active');
-        // 加载历史版本信息
-        loadHistoryVersions();
     } else if (tabId === 'upgrade') {
         document.querySelector('.upgrade-content').style.display = 'flex';
         document.getElementById('menu-upgrade').classList.add('active');
@@ -178,12 +176,13 @@ async function saveSettings() {
         : pathInput;
     
     try {
-        const response = await fetch(`/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
+        // 使用正确的API端点并直接发送settings对象（不需要嵌套）
+        const response = await fetch(`http://localhost:8080/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(settings)
+            body: JSON.stringify(settings)  // 直接发送settings对象，符合后端SaveSettingsRequest结构的flatten特性
         });
         
         const text = await response.text();
@@ -209,9 +208,27 @@ async function startInstall() {
     // 切换到执行安装标签页
     switchTab('execute');
     
+    // 获取当前解压路径
+    const pathInput = document.getElementById('pathInput').value;
+    if (!pathInput) {
+        const output = document.querySelector('.install-output');
+        output.textContent = '错误: 请先载入安装包';
+        return;
+    }
+    
+    // 获取解压后的文件路径（去掉.zip扩展名）
+    const dirPath = pathInput.endsWith('.zip') 
+        ? pathInput.substring(0, pathInput.length - 4)  // 去掉.zip扩展名
+        : pathInput;
+    
     try {
-        const response = await fetch('/api/install', {
-            method: 'POST'
+        // 调用正确的setup API
+        const response = await fetch('http://localhost:8080/api/setup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ dir_path: dirPath })
         });
         
         const reader = response.body.getReader();
@@ -241,20 +258,46 @@ async function loadUpgradePackage() {
     }
     
     try {
-        const response = await fetch('/api/upgrade/load', {
+        // 调用正确的unzip API
+        const response = await fetch('http://localhost:8080/api/unzip', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ path: pathInput })
+            body: JSON.stringify({ zip_path: pathInput })
         });
         
-        const data = await response.json();
+        const text = await response.text();
         
-        if (data.success) {
+        if (response.ok) {
             alert('升级包已成功载入');
+            console.log('解压结果:', text);
+            
+            // 可以在这里添加额外的逻辑，例如加载解压后的版本信息
+            const dirPath = pathInput.endsWith('.zip') 
+                ? pathInput.substring(0, pathInput.length - 4)  // 去掉.zip扩展名
+                : pathInput;
+            
+            // 更新当前版本信息区域
+            document.getElementById('current-version').innerHTML = '<div>正在加载版本信息...</div>';
+            
+            try {
+                const infoResponse = await fetch(`http://localhost:8080/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
+                if (infoResponse.ok) {
+                    const versionInfo = await infoResponse.text();
+                    document.getElementById('current-version').innerHTML = 
+                        `<div style="white-space: pre-wrap;">${versionInfo}</div>`;
+                } else {
+                    const errorText = await infoResponse.text();
+                    document.getElementById('current-version').innerHTML = 
+                        `<div>获取版本信息失败: ${errorText}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('current-version').innerHTML = 
+                    `<div>获取版本信息出错: ${error.message}</div>`;
+            }
         } else {
-            alert('载入失败: ' + (data.error || '未知错误'));
+            alert('载入失败: ' + text);
         }
     } catch (error) {
         alert('请求错误: ' + error.message);
