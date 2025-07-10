@@ -6,7 +6,7 @@ use crate::routes::update::{bakeup};
 use actix_web::{self, web};
 
 pub fn path_config(service_config: &mut web::ServiceConfig) {
-    let stu_scope = web::scope("path")
+    let stu_scope = web::scope("api")
         //install
         .service(index)
         .service(find_info_file)

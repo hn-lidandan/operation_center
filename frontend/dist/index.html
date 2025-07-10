@@ -20,20 +20,27 @@
             width: 16.66%; /* 占整个界面的六分之一宽度 */
             background-color: #f5f5f5;
             border-right: 1px solid #ddd;
-            padding: 20px 0;
+            padding: 0; /* 移除内边距 */
+            position: relative;
         }
+        /* 修改菜单样式，使其作为多边形镶嵌在界面上 */
         .sidebar-menu {
             list-style-type: none;
             padding: 0;
             margin: 0;
+            position: absolute;
+            left: 0;
+            top: 80px; /* 位于页面上方 */
+            width: 100%;
         }
         .sidebar-menu li {
             cursor: pointer;
-            font-size: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .sidebar-menu > li {
-            padding: 15px 20px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            padding: 15px 10px;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin-bottom: 1px;
         }
         .sidebar-menu li:hover {
             background-color: #e0e0e0;
@@ -42,27 +49,6 @@
             background-color: white;
             color: black;
             font-weight: bold;
-            border-left: 4px solid #4CAF50;
-        }
-        .submenu {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .submenu.open {
-            max-height: 200px;
-        }
-        .submenu li {
-            padding: 12px 0 12px 40px;
-            font-size: 18px;
-            background-color: #f9f9f9;
-        }
-        .submenu li.active {
-            background-color: white;
-            color: black;
             border-left: 4px solid #4CAF50;
         }
         .container {
@@ -77,21 +63,27 @@
         }
         h1 {
             font-size: 32px;
-            margin-bottom: 20px;
+            margin-bottom: 40px; /* 增加底部间距，原来是20px */
             color: #333;
         }
         .main-content {
             display: flex;
             flex-direction: column;
-            height: 35%; /* 从50%减小到35% */
+            height: 35%;
             max-height: 35vh;
             margin-bottom: 30px;
+            width: 75%; /* 减少宽度为原来的四分之三 */
+            margin-left: auto;
+            margin-right: auto;
         }
         .settings-content {
             display: flex;
             flex-direction: column;
             height: 40%;
             max-height: 40vh;
+            width: 75%; /* 减少宽度为原来的四分之三 */
+            margin-left: auto;
+            margin-right: auto;
         }
         .form-group {
             margin-bottom: 20px;
@@ -115,6 +107,15 @@
             border-radius: 4px;
             font-size: 18px;
         }
+        /* 缩小安装包地址输入框的宽度 */
+        .upgrade-path-input {
+            width: 66%; /* 原来的三分之二 */
+            padding: 12px;
+            margin-right: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 18px;
+        }
         .btn {
             padding: 12px 25px;
             background-color: #4CAF50;
@@ -131,6 +132,7 @@
         }
         .result-container {
             display: flex;
+            flex-direction: column;
             flex-grow: 1;
             margin-top: 15px;
         }
@@ -144,6 +146,7 @@
             line-height: 1.5;
             overflow-y: auto; /* 添加垂直滚动条 */
             max-height: calc(35vh - 120px); /* 计算最大高度，从50vh改为35vh */
+            width: 100%; /* 确保宽度填满父容器 */
         }
         .settings-container {
             display: flex;
@@ -159,6 +162,7 @@
             line-height: 1.5;
             overflow-y: auto;
             max-height: calc(40vh - 80px);
+            width: 100%; /* 确保宽度填满父容器 */
         }
         .settings-row {
             display: flex;
@@ -177,11 +181,6 @@
             border-radius: 4px;
             font-size: 16px;
         }
-        .save-btn {
-            margin-top: 15px;
-            margin-left: auto;
-            display: block;
-        }
         .buttons-container {
             display: flex;
             justify-content: flex-end;
@@ -199,6 +198,9 @@
             flex-direction: column;
             margin-top: 30px;
             height: 60vh;
+            width: 75%; /* 减少宽度为原来的四分之三 */
+            margin-left: auto;
+            margin-right: auto;
         }
         .execute-container {
             border: 1px solid #ddd;
@@ -206,6 +208,7 @@
             padding: 20px;
             height: 100%;
             overflow-y: auto;
+            width: 100%; /* 确保宽度填满父容器 */
         }
         /* 安装输出区域样式 */
         .install-output {
@@ -220,59 +223,363 @@
             font-size: 16px;
             line-height: 1.5;
         }
+        /* 升级准备和升级分析内容区域 */
+        .upgrade-prepare-content {
+            display: none;
+            flex-direction: column;
+            height: 120vh; /* 增加为原来的4/3倍 */
+            padding-top: 3.33vh; /* 原来是20vh (1/5)，现在向上移动到1/6的位置 */
+            width: 75%; /* 宽度减少为原来的3/4 */
+            margin: 0 auto; /* 居中显示 */
+        }
+        /* 历史版本区域样式 */
+        .history-version-container {
+            display: flex;
+            width: 100%;
+            margin-bottom: 30px;
+            justify-content: space-between; /* 使用空间分布来分开元素 */
+        }
+        .history-version-section {
+            width: 20%; /* 保持宽度为20% */
+        }
+        .history-version-box {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 292px; /* 保持增加后的高度 */
+            background-color: white;
+            margin-top: 10px;
+        }
+        .main-version-content {
+            width: 75%; /* 主内容区域宽度设为75%，留出间距 */
+        }
+        /* 当前系统版本和本地设置框宽度调整 */
+        .info-box, .local-settings-box {
+            width: 83.33%; /* 减少宽度，原来是100%，减少六分之一变为约83.33% */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* 升级页面的标签样式 */
+        .section-label {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        /* 升级页面的信息展示区域 */
+        .info-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 30px;
+            background-color: white;
+            min-height: 100px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* 增加本地设置框的高度 */
+        .local-settings-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 30px;
+            background-color: white;
+            min-height: 200px; /* 增加到原来的两倍 */
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* 升级准备页面的表单组，允许按钮水平排列 */
+        .upgrade-form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        /* 按钮容器 - 改进水平对齐 */
+        .buttons-inline {
+            display: flex;
+            align-items: center; /* 确保垂直居中对齐 */
+            margin-left: 15px; /* 与输入框保持间距 */
+        }
+        
+        /* 升级流程相关样式 */
+        .upgrade-content {
+            display: none;
+            flex-direction: column;
+            height: 120vh;
+            padding-top: 3.33vh;
+            width: 90%;
+            margin: 0 auto;
+            position: relative; /* 添加相对定位，以便底部的进度指示器可以绝对定位 */
+        }
+        
+        /* 升级步骤指示器样式 - 修改为椭圆形并移至底部 */
+        .upgrade-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            bottom: 50px; /* 放在底部 */
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .upgrade-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ccc;
+            z-index: 1;
+        }
+        
+        .upgrade-step {
+            width: 120px; /* 增加宽度 */
+            height: 60px; /* 减少高度，使其成为椭圆形 */
+            border-radius: 30px; /* 椭圆形边角 */
+            background-color: white;
+            border: 2px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .upgrade-step.active {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        
+        .upgrade-step.completed {
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        /* 升级内容区域样式 */
+        .upgrade-step-content {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 120px; /* 为底部的进度指示器留出空间 */
+        }
+        
+        .upgrade-step-content.active {
+            display: flex;
+        }
+        
+        /* 升级分析步骤样式 */
+        .analysis-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .system-info-section {
+            margin-bottom: 30px;
+            width: 75%; /* 减少宽度为原来的四分之三 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .system-info-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 10px;
+            min-height: 150px;
+        }
+        
+        /* 下一步按钮容器 */
+        .next-step-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            width: 75%; /* 与信息框宽度一致 */
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
-  <script type="module" crossorigin src="/assets/index-iV4gVVxe.js"></script>
+  <script type="module" crossorigin src="/assets/index-DQziO_5p.js"></script>
 </head>
 <body>
     <div class="app-container">
         <div class="sidebar">
+            <!-- 菜单作为多边形镶嵌在界面上 -->
             <ul class="sidebar-menu">
-                <li id="menu-install" class="active" onclick="toggleSubmenu('install')">
-                    安装
-                    <ul id="submenu-install" class="submenu">
-                        <li id="menu-init" onclick="switchTab('init', event)">配置初始化</li>
-                        <li id="menu-execute" onclick="switchTab('execute', event)">执行安装</li>
-                    </ul>
-                </li>
+                <li id="menu-init" class="active" onclick="switchTab('init')">配置初始化</li>
+                <li id="menu-execute" onclick="switchTab('execute')">执行安装</li>
+                <li id="menu-upgrade-prepare" onclick="switchTab('upgrade-prepare')">升级准备</li>
                 <li id="menu-upgrade" onclick="switchTab('upgrade')">升级</li>
             </ul>
         </div>
         <div class="container">
             <h1>Operation Center</h1>
-        <div class="main-content">
-            <div class="form-group">
-                <label class="label">安装包：</label>
-                <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
-                <button onclick="handleProcess()" class="btn">载入</button>
-            </div>
-            <div id="loading" class="loading">处理中...</div>
-            <div class="result-container">
-                <label class="label">版本信息：</label>
-                <div id="result" class="result"></div>
-            </div>
-        </div>
-        
-        <div class="settings-content">
-            <div class="form-group">
-                <label class="label wide-label">配置本地化信息：</label>
-            </div>
-            <div class="settings-container">
-                <div id="settings-editor" class="settings-editor">
-                    <!-- 设置项将在这里动态生成 -->
+            <div class="main-content">
+                <div class="form-group">
+                    <label class="label">安装包：</label>
+                    <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
+                    <button onclick="handleProcess()" class="btn">载入</button>
+                </div>
+                <div id="loading" class="loading">处理中...</div>
+                <div class="result-container">
+                    <label class="label">版本信息：</label>
+                    <div id="result" class="result"></div>
                 </div>
             </div>
-            <div class="buttons-container">
-                <button onclick="saveSettings()" class="btn">保存配置</button>
-                <button onclick="startInstall()" class="btn">安装</button>
+            
+            <div class="settings-content">
+                <div class="form-group">
+                    <label class="label wide-label">配置本地化信息：</label>
+                </div>
+                <div class="settings-container">
+                    <div id="settings-editor" class="settings-editor">
+                        <!-- 设置项将在这里动态生成 -->
+                    </div>
+                </div>
+                <div class="buttons-container">
+                    <button onclick="saveSettings()" class="btn">保存配置</button>
+                    <button onclick="startInstall()" class="btn">安装</button>
+                </div>
             </div>
-        </div>
-        
-        <!-- 新增执行安装的内容区域 -->
-        <div class="execute-content">
-            <div class="execute-container">
-                <!-- 执行安装的内容将在这里显示 -->
+            
+            <!-- 执行安装的内容区域 -->
+            <div class="execute-content">
+                <div class="execute-container">
+                    <!-- 执行安装的内容将在这里显示 -->
+                </div>
             </div>
-        </div>
+
+            <!-- 升级准备的内容区域 - 按照草图修改 -->
+            <div class="upgrade-prepare-content">
+                <!-- 历史版本和主内容区域容器 -->
+                <div class="history-version-container">
+                    <!-- 历史版本 -->
+                    <div class="history-version-section">
+                        <div class="section-label">历史版本：</div>
+                        <div class="history-version-box">
+                            <div id="history-versions">
+                                <!-- 历史版本信息将在这里显示 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 主要内容区域 -->
+                    <div class="main-version-content">
+                        <!-- 当前系统版本 -->
+                        <div class="section-label">当前系统版本：</div>
+                        <div class="info-box" id="current-version">
+                            <!-- 系统版本信息将在这里显示 -->
+                        </div>
+                        
+                        <!-- 本地设置 - 增加高度 -->
+                        <div class="section-label">本地设置：</div>
+                        <div class="local-settings-box" id="local-settings">
+                            <!-- 本地设置信息将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 安装包地址 - 缩小输入框长度并将按钮横向排列，修改水平对齐 -->
+                <div class="upgrade-form-group">
+                    <label class="label">安装包地址：</label>
+                    <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
+                    <div class="buttons-inline">
+                        <button onclick="loadUpgradePackage()" class="btn">载入</button>
+                        <button onclick="startUpgrade()" class="btn">启动升级</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 升级流程的内容区域 - 根据草图实现 -->
+            <div class="upgrade-content">
+                <!-- 升级分析步骤内容 -->
+                <div class="upgrade-step-content active" id="content-analysis">
+                    <div class="analysis-content">
+                        <div class="system-info-section">
+                            <div class="section-label">当前系统：</div>
+                            <div class="system-info-box" id="current-system-info">
+                                <!-- 当前系统信息将在这里显示 -->
+                            </div>
+                        </div>
+                        
+                        <div class="system-info-section">
+                            <div class="section-label">升级系统：</div>
+                            <div class="system-info-box" id="upgrade-system-info">
+                                <!-- 升级系统信息将在这里显示 -->
+                            </div>
+                        </div>
+                        
+                        <div class="system-info-section">
+                            <div class="section-label">升级项：</div>
+                            <div class="system-info-box" id="upgrade-items">
+                                <!-- 升级项信息将在这里显示 -->
+                            </div>
+                        </div>
+                        
+                        <div class="next-step-container">
+                            <button class="btn" onclick="nextUpgradeStep()">下一步</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 升级备份步骤内容 -->
+                <div class="upgrade-step-content" id="content-backup">
+                    <div class="system-info-section">
+                        <div class="section-label">备份进度：</div>
+                        <div class="system-info-box" id="backup-progress">
+                            <!-- 备份进度信息将在这里显示 -->
+                        </div>
+                    </div>
+                    
+                    <div class="next-step-container">
+                        <button class="btn" onclick="nextUpgradeStep()">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 更新组件步骤内容 -->
+                <div class="upgrade-step-content" id="content-update">
+                    <div class="system-info-section">
+                        <div class="section-label">更新进度：</div>
+                        <div class="system-info-box" id="update-progress">
+                            <!-- 更新进度信息将在这里显示 -->
+                        </div>
+                    </div>
+                    
+                    <div class="next-step-container">
+                        <button class="btn" onclick="nextUpgradeStep()">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 结束步骤内容 -->
+                <div class="upgrade-step-content" id="content-finish">
+                    <div class="system-info-section">
+                        <div class="section-label">升级结果：</div>
+                        <div class="system-info-box" id="upgrade-result">
+                            <!-- 升级结果信息将在这里显示 -->
+                        </div>
+                    </div>
+                    
+                    <div class="next-step-container">
+                        <button class="btn" onclick="finishUpgrade()">完成</button>
+                    </div>
+                </div>
+                
+                <!-- 升级进度指示器 - 移至底部并改为椭圆形 -->
+                <div class="upgrade-progress">
+                    <div class="upgrade-step active" id="step-analysis">升级分析</div>
+                    <div class="upgrade-step" id="step-backup">升级备份</div>
+                    <div class="upgrade-step" id="step-update">更新组件</div>
+                    <div class="upgrade-step" id="step-finish">结束</div>
+                </div>
+            </div>
         </div>
     </div>
 </body>

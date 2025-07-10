@@ -37,7 +37,7 @@ async fn main() -> std::io::Result<()> {
                     .configure(routes::path_exposure::path_config)
                     .service(web::resource("/{path:.*}").to(handle_request))
             })
-            .bind(config.web_config.format());
+                .bind(config.web_config.format());
 
         if let Ok(httpserver) = server {
             let _ = httpserver.run().await;

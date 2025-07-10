@@ -38,7 +38,7 @@ pub struct FilePathRequest {
     dir_path: String, // 要搜索的目录路径
 }
 
-#[get("find_setting_file")]
+#[get("/find_setting_file")]
 async fn find_setting_file(path: web::Query<FilePathRequest>) -> impl Responder {
     let file_path = Path::new(&path.dir_path).join("values/value.yml");
     if !file_path.exists() {
