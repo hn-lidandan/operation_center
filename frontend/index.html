@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Center</title>
+    <style>
+        html, body {
+            height: 100%;
+            font-size: 18px;
+            margin: 0;
+            padding: 0;
+        }
+        .app-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+        .sidebar {
+            width: 16.66%; /* 占整个界面的六分之一宽度 */
+            background-color: #f5f5f5;
+            border-right: 1px solid #ddd;
+            padding: 20px 0;
+        }
+        .sidebar-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu li {
+            cursor: pointer;
+            font-size: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .sidebar-menu > li {
+            padding: 15px 20px;
+        }
+        .sidebar-menu li:hover {
+            background-color: #e0e0e0;
+        }
+        .sidebar-menu li.active {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            border-left: 4px solid #4CAF50;
+        }
+        .submenu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .submenu.open {
+            max-height: 200px;
+        }
+        .submenu li {
+            padding: 12px 0 12px 40px;
+            font-size: 18px;
+            background-color: #f9f9f9;
+        }
+        .submenu li.active {
+            background-color: white;
+            color: black;
+            border-left: 4px solid #4CAF50;
+        }
+        .container {
+            width: 83.34%; /* 占整个界面的六分之五宽度 */
+            height: 100%;
+            padding: 20px 30px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 35%; /* 从50%减小到35% */
+            max-height: 35vh;
+            margin-bottom: 30px;
+        }
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            height: 40%;
+            max-height: 40vh;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .label {
+            margin-right: 15px;
+            font-weight: bold;
+            min-width: 100px;
+            font-size: 20px;
+        }
+        .wide-label {
+            min-width: 180px;
+        }
+        .path-input {
+            flex-grow: 1;
+            padding: 12px;
+            margin-right: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+        .btn {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .result-container {
+            display: flex;
+            flex-grow: 1;
+            margin-top: 15px;
+        }
+        .result {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            flex-grow: 1;
+            font-size: 18px;
+            line-height: 1.5;
+            overflow-y: auto; /* 添加垂直滚动条 */
+            max-height: calc(35vh - 120px); /* 计算最大高度，从50vh改为35vh */
+        }
+        .settings-container {
+            display: flex;
+            flex-grow: 1;
+            margin-top: 15px;
+        }
+        .settings-editor {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1;
+            font-size: 18px;
+            line-height: 1.5;
+            overflow-y: auto;
+            max-height: calc(40vh - 80px);
+        }
+        .settings-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .settings-key {
+            width: 250px;
+            font-weight: bold;
+            padding-right: 15px;
+        }
+        .settings-value {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        .loading {
+            display: none;
+            margin-top: 10px;
+            color: #666;
+            font-size: 18px;
+        }
+        /* 新增执行安装界面的样式 */
+        .execute-content {
+            display: none;
+            flex-direction: column;
+            margin-top: 30px;
+            height: 60vh;
+        }
+        .execute-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        /* 安装输出区域样式 */
+        .install-output {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            height: 100%;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li id="menu-install" class="active" onclick="toggleSubmenu('install')">
+                    安装
+                    <ul id="submenu-install" class="submenu">
+                        <li id="menu-init" onclick="switchTab('init', event)">配置初始化</li>
+                        <li id="menu-execute" onclick="switchTab('execute', event)">执行安装</li>
+                    </ul>
+                </li>
+                <li id="menu-upgrade" onclick="switchTab('upgrade')">升级</li>
+            </ul>
+        </div>
+        <div class="container">
+            <h1>Operation Center</h1>
+        <div class="main-content">
+            <div class="form-group">
+                <label class="label">安装包：</label>
+                <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
+                <button onclick="handleProcess()" class="btn">载入</button>
+            </div>
+            <div id="loading" class="loading">处理中...</div>
+            <div class="result-container">
+                <label class="label">版本信息：</label>
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+        
+        <div class="settings-content">
+            <div class="form-group">
+                <label class="label wide-label">配置本地化信息：</label>
+            </div>
+            <div class="settings-container">
+                <div id="settings-editor" class="settings-editor">
+                    <!-- 设置项将在这里动态生成 -->
+                </div>
+            </div>
+            <div class="buttons-container">
+                <button onclick="saveSettings()" class="btn">保存配置</button>
+                <button onclick="startInstall()" class="btn">安装</button>
+            </div>
+        </div>
+        
+        <!-- 新增执行安装的内容区域 -->
+        <div class="execute-content">
+            <div class="execute-container">
+                <!-- 执行安装的内容将在这里显示 -->
+            </div>
+        </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html> 

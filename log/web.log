@@ -1,0 +1,171 @@
+2025-07-10 11:30:05.631679000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=162.833µs elapsed_secs=0.000162833
+2025-07-10 11:30:05.634378000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=733.75µs elapsed_secs=0.00073375
+2025-07-10 11:30:05.634436000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 11:30:05.634594000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=30.375µs elapsed_secs=3.0375e-5
+2025-07-10 11:30:05.634714000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=11µs elapsed_secs=1.1e-5
+2025-07-10 11:30:05.634825000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=10.208µs elapsed_secs=1.0208e-5
+2025-07-10 11:30:05.635023000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=0 elapsed=39.667µs elapsed_secs=3.9667e-5
+2025-07-10 11:30:05.635168000 [INFO ] <sea_orm_migration::migrator:385>:Applying migration 'm20250616_094640_create_subtask_messageinfo'
+2025-07-10 11:30:05.635635000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"subtask_messageinfo\" ( \"id\" bigint NOT NULL PRIMARY KEY, \"sub_title\" varchar(255) NOT NULL, \"description\" text, \"status\" varchar(50) NOT NULL, \"log\" text, \"task_order\" integer, \"task_type\" varchar(200) NOT NULL, \"parent_id\" bigint, \"create_timestamp\" timestamp_with_timezone_text, \"update_timestamp\" timestamp_with_timezone_text, \"bak1\" bigint, \"bak2\" varchar(255) )\n" rows_affected=0 rows_returned=0 elapsed=348.542µs elapsed_secs=0.000348542
+2025-07-10 11:30:05.635677000 [INFO ] <sea_orm_migration::migrator:387>:Migration 'm20250616_094640_create_subtask_messageinfo' has been applied
+2025-07-10 11:30:05.636145000 [INFO ] <sqlx_core::logger:143>:summary="INSERT INTO \"seaql_migrations\" (\"version\", …" db.statement="\n\nINSERT INTO \"seaql_migrations\" (\"version\", \"applied_at\") VALUES (?, ?)\n" rows_affected=1 rows_returned=0 elapsed=292.292µs elapsed_secs=0.000292292
+2025-07-10 11:30:05.636179000 [INFO ] <sea_orm_migration::migrator:385>:Applying migration 'm20250616_100023_create_main_task_messageinfo'
+2025-07-10 11:30:05.636570000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"main_task_messageinfo\" ( \"id\" bigint NOT NULL PRIMARY KEY, \"name\" varchar(255) NOT NULL, \"description\" text, \"status\" varchar(50) NOT NULL, \"log\" text, \"priority\" integer, \"task_type\" varchar(200) NOT NULL, \"worker_name\" varchar(255) NOT NULL, \"create_timestamp\" timestamp_with_timezone_text NOT NULL, \"update_timestamp\" timestamp_with_timezone_text, \"bak1\" bigint, \"bak2\" varchar(255) )\n" rows_affected=1 rows_returned=0 elapsed=299.458µs elapsed_secs=0.000299458
+2025-07-10 11:30:05.636608000 [INFO ] <sea_orm_migration::migrator:387>:Migration 'm20250616_100023_create_main_task_messageinfo' has been applied
+2025-07-10 11:30:05.636938000 [INFO ] <sqlx_core::logger:143>:summary="INSERT INTO \"seaql_migrations\" (\"version\", …" db.statement="\n\nINSERT INTO \"seaql_migrations\" (\"version\", \"applied_at\") VALUES (?, ?)\n" rows_affected=1 rows_returned=0 elapsed=241.708µs elapsed_secs=0.000241708
+2025-07-10 11:30:05.637233000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 11:30:05.637305000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 11:30:05.637331000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8066", workers: 10, listening on: 0.0.0.0:8066
+2025-07-10 11:42:22.147925000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 11:42:22.149325000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 11:42:22.149687000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.149852000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150015000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150159000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150309000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150433000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150551000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150670000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150774000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:22.150875000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:42:40.919833000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=240.75µs elapsed_secs=0.00024075
+2025-07-10 11:42:40.921535000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=734.25µs elapsed_secs=0.00073425
+2025-07-10 11:42:40.921678000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 11:42:40.921943000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=29.917µs elapsed_secs=2.9917e-5
+2025-07-10 11:42:40.922122000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=19.375µs elapsed_secs=1.9375e-5
+2025-07-10 11:42:40.922319000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=16.917µs elapsed_secs=1.6917e-5
+2025-07-10 11:42:40.922859000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=102.959µs elapsed_secs=0.000102959
+2025-07-10 11:42:40.923200000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 11:42:40.923810000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 11:42:40.923990000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 11:42:40.924042000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8066", workers: 10, listening on: 0.0.0.0:8066
+2025-07-10 11:46:09.574586000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 11:46:09.575263000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 11:46:09.575957000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576226000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576342000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576496000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576645000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576764000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576861000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.576970000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.577076000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 11:46:09.577179000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:54:08.390372000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=170.208µs elapsed_secs=0.000170208
+2025-07-10 12:54:08.392815000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=883.791µs elapsed_secs=0.000883791
+2025-07-10 12:54:08.393096000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 12:54:08.393665000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=40.583µs elapsed_secs=4.0583e-5
+2025-07-10 12:54:08.393915000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=14.416µs elapsed_secs=1.4416e-5
+2025-07-10 12:54:08.394088000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=10.834µs elapsed_secs=1.0834e-5
+2025-07-10 12:54:08.394375000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=73.125µs elapsed_secs=7.3125e-5
+2025-07-10 12:54:08.394594000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 12:54:08.394916000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 12:54:08.395061000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 12:54:08.395127000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8066", workers: 10, listening on: 0.0.0.0:8066
+2025-07-10 12:56:55.872059000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 12:56:55.872938000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.873801000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.874015000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.874207000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.874375000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.874543000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.874664000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 12:56:55.874804000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.875009000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.875209000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:56:55.875360000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 12:57:12.602967000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=164.292µs elapsed_secs=0.000164292
+2025-07-10 12:57:12.604492000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=539.5µs elapsed_secs=0.0005395
+2025-07-10 12:57:12.604686000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 12:57:12.605116000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=24.625µs elapsed_secs=2.4625e-5
+2025-07-10 12:57:12.605350000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=24µs elapsed_secs=2.4e-5
+2025-07-10 12:57:12.605619000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=17.333µs elapsed_secs=1.7333e-5
+2025-07-10 12:57:12.606064000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=122.584µs elapsed_secs=0.000122584
+2025-07-10 12:57:12.606369000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 12:57:12.606850000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 12:57:12.606985000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 12:57:12.607045000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8080", workers: 10, listening on: 0.0.0.0:8080
+2025-07-10 12:58:32.190154000 [INFO ] <operation_center::routes::instanll:83>:保存配置到路径: /Users/ldd/Workspaces/zip/now-apk/dss-gateway-mac-app
+2025-07-10 12:58:32.191424000 [INFO ] <operation_center::routes::instanll:106>:保存配置内容: KEY1: '124'
+
+2025-07-10 13:36:38.827547000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 13:36:38.829922000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 13:36:38.830707000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.830859000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831048000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831262000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831426000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831562000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831725000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.831906000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.832070000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:36:38.832130000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:37:01.527117000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=134.125µs elapsed_secs=0.000134125
+2025-07-10 13:37:01.528335000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=389.792µs elapsed_secs=0.000389792
+2025-07-10 13:37:01.528410000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 13:37:01.528582000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=18.75µs elapsed_secs=1.875e-5
+2025-07-10 13:37:01.528692000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=12.666µs elapsed_secs=1.2666e-5
+2025-07-10 13:37:01.528856000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=10.166µs elapsed_secs=1.0166e-5
+2025-07-10 13:37:01.529144000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=82µs elapsed_secs=8.2e-5
+2025-07-10 13:37:01.529340000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 13:37:01.529675000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 13:37:01.529791000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 13:37:01.529814000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8080", workers: 10, listening on: 0.0.0.0:8080
+2025-07-10 13:38:31.486091000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 13:38:31.487647000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488262000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488389000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488562000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488669000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488783000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.488915000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.489009000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 13:38:31.489099000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.489228000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:38:31.489362000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 13:40:50.901522000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=173.667µs elapsed_secs=0.000173667
+2025-07-10 13:40:50.902885000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=329.75µs elapsed_secs=0.00032975
+2025-07-10 13:40:50.902990000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 13:40:50.903414000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=14.542µs elapsed_secs=1.4542e-5
+2025-07-10 13:40:50.903660000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=79.542µs elapsed_secs=7.9542e-5
+2025-07-10 13:40:50.903956000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=16µs elapsed_secs=1.6e-5
+2025-07-10 13:40:50.904208000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=83.584µs elapsed_secs=8.3584e-5
+2025-07-10 13:40:50.904504000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 13:40:50.905060000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 13:40:50.905199000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 13:40:50.905282000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8080", workers: 10, listening on: 0.0.0.0:8080
+2025-07-10 14:06:55.317934000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 14:06:55.320495000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 14:06:55.321331000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.322828000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323120000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323301000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323450000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323566000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323687000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323843000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.323946000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:06:55.324126000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 14:45:08.947409000 [INFO ] <sqlx_core::logger:143>:summary="PRAGMA foreign_keys = ON; …" db.statement="\n\nPRAGMA foreign_keys = ON; \n" rows_affected=0 rows_returned=0 elapsed=152.375µs elapsed_secs=0.000152375
+2025-07-10 14:45:08.948662000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=283.25µs elapsed_secs=0.00028325
+2025-07-10 14:45:08.948789000 [INFO ] <sea_orm_migration::migrator:371>:Applying all pending migrations
+2025-07-10 14:45:08.949074000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=19.625µs elapsed_secs=1.9625e-5
+2025-07-10 14:45:08.949285000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=31.833µs elapsed_secs=3.1833e-5
+2025-07-10 14:45:08.949586000 [INFO ] <sqlx_core::logger:143>:summary="CREATE TABLE IF NOT …" db.statement="\n\nCREATE TABLE IF NOT EXISTS \"seaql_migrations\" ( \"version\" varchar NOT NULL PRIMARY KEY, \"applied_at\" bigint NOT NULL )\n" rows_affected=0 rows_returned=0 elapsed=22.875µs elapsed_secs=2.2875e-5
+2025-07-10 14:45:08.949975000 [INFO ] <sqlx_core::logger:143>:summary="SELECT \"version\", \"applied_at\" FROM …" db.statement="\n\nSELECT \"version\", \"applied_at\" FROM \"seaql_migrations\" ORDER BY \"version\" ASC\n" rows_affected=0 rows_returned=2 elapsed=110.958µs elapsed_secs=0.000110958
+2025-07-10 14:45:08.950144000 [INFO ] <sea_orm_migration::migrator:376>:No pending migrations
+2025-07-10 14:45:08.950441000 [INFO ] <actix_server::builder:310>:starting 10 workers
+2025-07-10 14:45:08.950514000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
+2025-07-10 14:45:08.950547000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8080", workers: 10, listening on: 0.0.0.0:8080
+2025-07-10 15:08:43.588833000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-10 15:08:43.592374000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-10 15:08:43.593136000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.593328000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.593542000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.593703000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.594040000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.594356000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.594526000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.594699000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.594794000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-10 15:08:43.595050000 [INFO ] <actix_server::worker:593>:shutting down idle worker

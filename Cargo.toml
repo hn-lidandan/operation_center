@@ -1,0 +1,38 @@
+[package]
+name = "operation_center"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4.11.0" # Web 框架
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.140"
+serde_yaml = "0.9" # YAML 解析库
+tokio = { version = "1.35", features = ["rt-multi-thread","fs", "sync"] }
+futures-util = "0.3"
+tokio-stream = "0.1"
+zip = "0.6"      # ZIP 解压库
+futures = "0.3"  # 异步文件操作
+simple-log = "2.3.0"
+tracing = "0.1.41" # 日志配置
+config = "0.13.3"  # 配置文件处理
+walkdir = "2.4.0"  # 目录遍历
+
+
+sea-orm = { version = "1.1.12", features = [
+    "sqlx-postgres",
+    "runtime-tokio-rustls",
+    "sqlx-sqlite",
+] }
+sqlx = { version = "0.8.5", features = ["mysql", "runtime-tokio-rustls"] }
+once_cell = "1.21.3"
+migration = { path = "./migration"} # 表结构自动创建
+validator = { version = "0.20.0", features = ["derive"] } # 参数校验
+chrono = "0.4"
+utoipa = { version = "5.3.1", features = ["actix_extras", "chrono"] } # 接口文档配置
+
+rust-embed = "8.7"
+actix-files = "0.6"
+hex = "0.4"
+mime = "0.3"
+mime_guess = "2.0"
