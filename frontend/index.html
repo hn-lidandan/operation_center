@@ -247,18 +247,13 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             padding: 15px;
-            min-height: 292px; /* 保持增加后的高度 */
+            height: 300px; /* 固定高度 */
+            overflow-y: auto; /* 内容过多时显示滚动条 */
             background-color: white;
             margin-top: 10px;
         }
         .main-version-content {
             width: 75%; /* 主内容区域宽度设为75%，留出间距 */
-        }
-        /* 当前系统版本和本地设置框宽度调整 */
-        .info-box, .local-settings-box {
-            width: 83.33%; /* 减少宽度，原来是100%，减少六分之一变为约83.33% */
-            margin-left: auto;
-            margin-right: auto;
         }
         /* 升级页面的标签样式 */
         .section-label {
@@ -266,6 +261,7 @@
             font-size: 20px;
             margin-bottom: 10px;
         }
+        
         /* 升级页面的信息展示区域 */
         .info-box {
             border: 1px solid #ddd;
@@ -273,20 +269,32 @@
             padding: 15px;
             margin-bottom: 30px;
             background-color: white;
-            min-height: 100px;
-            width: 100%;
+            height: 150px; /* 固定高度 */
+            overflow-y: auto; /* 内容过多时显示滚动条 */
+            width: 83.33%;
+            margin-left: auto;
+            margin-right: auto;
             box-sizing: border-box;
         }
-        /* 增加本地设置框的高度 */
+        
+        /* 本地设置框样式调整 */
         .local-settings-box {
+            width: 83.33%;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: transparent;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+        }
+        
+        /* 升级设置编辑器样式调整 */
+        #upgrade-settings-editor {
+            height: 300px; /* 固定高度，是当前系统版本框的两倍 */
+            overflow-y: auto; /* 内容过多时显示滚动条 */
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 30px;
             background-color: white;
-            min-height: 200px; /* 增加到原来的两倍 */
-            width: 100%;
-            box-sizing: border-box;
+            padding: 15px;
         }
         /* 升级准备页面的表单组，允许按钮水平排列 */
         .upgrade-form-group {
@@ -318,7 +326,7 @@
             justify-content: space-between;
             align-items: center;
             position: absolute;
-            bottom: 50px; /* 放在底部 */
+            bottom: 120px; /* 再上移40px，原来是80px */
             left: 0;
             right: 0;
             width: 100%;
@@ -481,23 +489,20 @@
                         <!-- 本地设置 - 增加高度 -->
                         <div class="section-label">本地设置：</div>
                         <div class="local-settings-box">
-                            <div id="upgrade-settings-editor" class="settings-editor">
+                            <div id="upgrade-settings-editor">
                                 <!-- 设置项将在这里动态生成 -->
                             </div>
-                        </div>
-                        <!-- 添加保存配置按钮 -->
-                        <div class="buttons-container" style="margin-top: 10px;">
-                            <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 安装包地址 - 缩小输入框长度并将按钮横向排列，修改水平对齐 -->
+                <!-- 安装包地址和按钮区域 -->
                 <div class="upgrade-form-group">
                     <label class="label">安装包地址：</label>
                     <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
                     <div class="buttons-inline">
                         <button onclick="loadUpgradePackage()" class="btn">载入</button>
+                        <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
                         <button onclick="startUpgrade()" class="btn">启动升级</button>
                     </div>
                 </div>
@@ -553,14 +558,12 @@
                 <div class="upgrade-step-content" id="content-update">
                     <div class="system-info-section">
                         <div class="section-label">更新进度：</div>
-                        <div class="system-info-box" id="update-progress">
+                        <div class="system-info-box" id="update-progress" style="font-family: monospace; white-space: pre-wrap; background-color: #f8f8f8; height: 600px; overflow-y: auto; line-height: 1.5;">
                             <!-- 更新进度信息将在这里显示 -->
                         </div>
                     </div>
                     
-                    <div class="next-step-container">
-                        <button class="btn" onclick="nextUpgradeStep()">下一步</button>
-                    </div>
+                    <!-- 移除下一步按钮，更新完成后会自动进入下一步 -->
                 </div>
                 
                 <!-- 结束步骤内容 -->

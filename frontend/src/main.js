@@ -281,6 +281,10 @@ async function loadUpgradePackage() {
                 ? pathInput.substring(0, pathInput.length - 4)  // 去掉.zip扩展名
                 : pathInput;
             
+            // 存储当前升级包路径，供后续使用
+            window.currentUpgradePath = dirPath;
+            console.log('设置当前升级包路径:', window.currentUpgradePath);
+            
             // 更新当前版本信息区域
             document.getElementById('current-version').innerHTML = '<div>正在加载版本信息...</div>';
             
@@ -365,6 +369,22 @@ async function loadUpgradePackage() {
 
 // 启动升级流程
 function startUpgrade() {
+    // 获取当前升级包路径
+    const pathInput = document.getElementById('upgradePathInput').value;
+    if (!pathInput) {
+        alert('请先载入升级包');
+        return;
+    }
+    
+    // 确保window.currentUpgradePath已设置
+    if (!window.currentUpgradePath) {
+        const dirPath = pathInput.endsWith('.zip') 
+            ? pathInput.substring(0, pathInput.length - 4)  // 去掉.zip扩展名
+            : pathInput;
+        window.currentUpgradePath = dirPath;
+        console.log('启动升级时设置路径:', window.currentUpgradePath);
+    }
+    
     // 切换到升级标签页
     switchTab('upgrade');
     
@@ -431,22 +451,44 @@ async function nextUpgradeStep() {
     if (activeStepId === 'step-analysis') {
         nextStepId = 'step-backup';
         nextContentId = 'content-backup';
+        
+        // 激活下一步骤
+        document.getElementById(nextStepId).classList.add('active');
+        
+        // 显示下一步骤内容
+        document.getElementById(nextContentId).classList.add('active');
+        
+        // 执行备份操作
         await performBackup();
     } else if (activeStepId === 'step-backup') {
         nextStepId = 'step-update';
         nextContentId = 'content-update';
+        
+        // 激活下一步骤
+        document.getElementById(nextStepId).classList.add('active');
+        
+        // 显示下一步骤内容
+        document.getElementById(nextContentId).classList.add('active');
+        
+        // 初始化更新进度显示
+        const updateProgress = document.getElementById('update-progress');
+        updateProgress.textContent = '更新中...';
+        
+        // 执行更新操作
         await performUpdate();
     } else if (activeStepId === 'step-update') {
         nextStepId = 'step-finish';
         nextContentId = 'content-finish';
+        
+        // 激活下一步骤
+        document.getElementById(nextStepId).classList.add('active');
+        
+        // 显示下一步骤内容
+        document.getElementById(nextContentId).classList.add('active');
+        
+        // 执行完成升级操作
         await completeUpgrade();
     }
-    
-    // 激活下一步骤
-    document.getElementById(nextStepId).classList.add('active');
-    
-    // 显示下一步骤内容
-    document.getElementById(nextContentId).classList.add('active');
 }
 
 // 执行备份
@@ -474,22 +516,70 @@ async function performBackup() {
 // 执行更新
 async function performUpdate() {
     const updateProgress = document.getElementById('update-progress');
-    updateProgress.textContent = '更新中...';
+    // 注意：updateProgress.textContent = '更新中...' 已经在nextUpgradeStep中设置，这里不需要重复
+    
+    // 获取当前升级包路径
+    const dirPath = window.currentUpgradePath;
+    console.log('执行更新使用路径:', dirPath);
+    
+    if (!dirPath) {
+        updateProgress.textContent = '错误: 无法获取升级包路径';
+        return;
+    }
     
     try {
-        const response = await fetch('/api/upgrade/update', {
-            method: 'POST'
+        console.log('开始调用更新API, 参数:', { dir_path: dirPath });
+        // 调用update API，传入dir_path参数
+        const response = await fetch('http://localhost:8080/api/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ dir_path: dirPath })
         });
         
-        const data = await response.json();
+        console.log('更新API响应状态:', response.status);
         
-        if (data.success) {
-            updateProgress.textContent = '更新完成: ' + (data.message || '');
-        } else {
-            updateProgress.textContent = '更新失败: ' + (data.error || '未知错误');
+        // 使用流式处理响应
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        
+        // 清空之前的内容
+        updateProgress.textContent = '';
+        
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                console.log('更新流式响应结束');
+                break;
+            }
+            
+            const text = decoder.decode(value, { stream: true });
+            console.log('收到更新流数据:', text);
+            updateProgress.textContent += text;
+            updateProgress.scrollTop = updateProgress.scrollHeight; // 自动滚动到底部
+        }
+        
+        // 更新完成后，检查是否成功
+        if (updateProgress.textContent.includes('更新组件完成') || 
+            updateProgress.textContent.includes('更新成功') || 
+            updateProgress.textContent.includes('验证通过')) {
+            
+            console.log('更新成功，将所有椭圆变绿');
+            
+            // 将所有步骤椭圆标记为已完成（绿色）
+            document.getElementById('step-analysis').classList.add('completed');
+            document.getElementById('step-backup').classList.add('completed');
+            document.getElementById('step-update').classList.add('completed');
+            document.getElementById('step-finish').classList.add('completed');
+            
+            // 不再自动跳转到结束步骤
+            // 不再隐藏当前步骤内容
+            // 不再执行completeUpgrade操作
         }
     } catch (error) {
-        updateProgress.textContent = '更新过程出错: ' + error.message;
+        console.error('更新过程出错:', error);
+        updateProgress.textContent += '\n更新过程出错: ' + error.message;
     }
 }
 
