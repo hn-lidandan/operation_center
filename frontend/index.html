@@ -141,27 +141,25 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             white-space: pre-wrap;
-            flex-grow: 1;
             font-size: 18px;
             line-height: 1.5;
             overflow-y: auto; /* 添加垂直滚动条 */
-            max-height: calc(35vh - 120px); /* 计算最大高度，从50vh改为35vh */
+            height: 300px; /* 设置固定高度，而不是使用max-height和flex-grow */
             width: 100%; /* 确保宽度填满父容器 */
         }
         .settings-container {
             display: flex;
-            flex-grow: 1;
             margin-top: 15px;
+            width: 100%;
         }
         .settings-editor {
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            flex-grow: 1;
             font-size: 18px;
             line-height: 1.5;
-            overflow-y: auto;
-            max-height: calc(40vh - 80px);
+            overflow-y: auto; /* 确保有垂直滚动条 */
+            height: 300px; /* 设置固定高度，而不是使用max-height和flex-grow */
             width: 100%; /* 确保宽度填满父容器 */
         }
         .settings-row {
@@ -218,10 +216,43 @@
             padding: 15px;
             border-radius: 4px;
             border: 1px solid #ddd;
-            height: 100%;
+            height: 100%; /* 恢复原来的高度 */
             overflow-y: auto;
             font-size: 16px;
             line-height: 1.5;
+            margin-bottom: 20px; /* 为下方的进度条留出空间 */
+        }
+        
+        /* 进度条容器 - 独立于输出框 */
+        .install-progress-container {
+            width: 100%;
+            height: 30px; /* 增加高度使进度条更明显 */
+            background-color: #f1f1f1;
+            border-radius: 15px; /* 圆角更大 */
+            overflow: hidden;
+            margin-top: 20px; /* 与上方输出框保持距离 */
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 添加轻微阴影 */
+        }
+        
+        .install-progress-bar {
+            height: 100%;
+            width: 0; /* 初始宽度为0 */
+            background-color: #4CAF50;
+            border-radius: 15px; /* 与容器相同的圆角 */
+            transition: width 0.3s ease; /* 添加平滑过渡效果 */
+            text-align: center;
+            line-height: 30px; /* 与高度相同，使文本垂直居中 */
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .install-progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
         }
         /* 升级准备和升级分析内容区域 */
         .upgrade-prepare-content {
@@ -269,7 +300,7 @@
             padding: 15px;
             margin-bottom: 30px;
             background-color: white;
-            height: 150px; /* 固定高度 */
+            height: 300px; /* 固定高度为300px */
             overflow-y: auto; /* 内容过多时显示滚动条 */
             width: 83.33%;
             margin-left: auto;
@@ -326,7 +357,7 @@
             justify-content: space-between;
             align-items: center;
             position: absolute;
-            bottom: 120px; /* 再上移40px，原来是80px */
+            bottom: 150px; /* 从120px上移到150px */
             left: 0;
             right: 0;
             width: 100%;
@@ -371,16 +402,32 @@
             color: white;
         }
         
-        /* 升级内容区域样式 */
+        /* 升级步骤内容区域样式 */
         .upgrade-step-content {
             display: none;
-            flex-direction: column;
-            width: 100%;
-            margin-bottom: 120px; /* 为底部的进度指示器留出空间 */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 20px;
+            background-color: white;
         }
         
         .upgrade-step-content.active {
-            display: flex;
+            display: block;
+        }
+        
+        /* 升级进度显示区域 */
+        #update-progress {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            height: 600px; /* 增加高度，原来是400px */
+            overflow-y: auto; /* 添加垂直滚动条 */
+            font-size: 16px;
+            line-height: 1.5;
         }
         
         /* 升级分析步骤样式 */
@@ -460,8 +507,13 @@
             <!-- 执行安装的内容区域 -->
             <div class="execute-content">
                 <div class="execute-container">
-                    <!-- 执行安装的内容将在这里显示 -->
+                    <!-- 安装输出区域 - 初始内容会在JavaScript中设置 -->
                 </div>
+                <!-- 将进度条移到execute-container外部但仍在execute-content内部 -->
+                <div class="install-progress-container">
+                    <div class="install-progress-bar">0%</div>
+                </div>
+                <div class="install-progress-text"></div>
             </div>
 
             <!-- 升级准备的内容区域 - 按照草图修改 -->
@@ -563,21 +615,11 @@
                         </div>
                     </div>
                     
-                    <!-- 移除下一步按钮，更新完成后会自动进入下一步 -->
-                </div>
-                
-                <!-- 结束步骤内容 -->
-                <div class="upgrade-step-content" id="content-finish">
-                    <div class="system-info-section">
-                        <div class="section-label">升级结果：</div>
-                        <div class="system-info-box" id="upgrade-result">
-                            <!-- 升级结果信息将在这里显示 -->
-                        </div>
+                    <!-- 添加进度条，与执行安装的进度条样式一致 -->
+                    <div class="install-progress-container" style="width: 75%; margin-left: auto; margin-right: auto;">
+                        <div class="install-progress-bar" id="update-progress-bar">0%</div>
                     </div>
-                    
-                    <div class="next-step-container">
-                        <button class="btn" onclick="finishUpgrade()">完成</button>
-                    </div>
+                    <div class="install-progress-text" id="update-progress-text" style="width: 75%; margin-left: auto; margin-right: auto;"></div>
                 </div>
                 
                 <!-- 升级进度指示器 - 移至底部并改为椭圆形 -->

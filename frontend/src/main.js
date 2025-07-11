@@ -41,6 +41,25 @@ function switchTab(tabId) {
     } else if (tabId === 'execute') {
         document.querySelector('.execute-content').style.display = 'flex';
         document.getElementById('menu-execute').classList.add('active');
+        
+        // 确保执行安装界面的元素正确初始化
+        const executeContainer = document.querySelector('.execute-container');
+        if (!executeContainer.querySelector('.install-output')) {
+            const installOutput = document.createElement('div');
+            installOutput.className = 'install-output';
+            installOutput.textContent = '请先在"配置初始化"页面载入安装包，然后点击"安装"按钮开始安装。';
+            executeContainer.innerHTML = '';
+            executeContainer.appendChild(installOutput);
+        }
+        
+        // 重置进度条
+        const progressBar = document.querySelector('.install-progress-bar');
+        const progressText = document.querySelector('.install-progress-text');
+        if (progressBar && progressText) {
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            progressText.textContent = '';
+        }
     } else if (tabId === 'upgrade-prepare') {
         document.querySelector('.upgrade-prepare-content').style.display = 'flex';
         document.getElementById('menu-upgrade-prepare').classList.add('active');
@@ -48,6 +67,9 @@ function switchTab(tabId) {
         document.querySelector('.upgrade-content').style.display = 'flex';
         document.getElementById('menu-upgrade').classList.add('active');
     }
+    
+    // 保存当前标签页
+    window.currentTab = tabId;
 }
 
 // 处理安装包路径
@@ -205,8 +227,20 @@ async function saveSettings() {
 
 // 开始安装
 async function startInstall() {
+    // 获取DOM元素
     const executeContainer = document.querySelector('.execute-container');
-    executeContainer.innerHTML = '<div class="install-output">开始安装...</div>';
+    const progressBar = document.querySelector('.install-progress-bar');
+    const progressText = document.querySelector('.install-progress-text');
+    
+    // 创建安装输出元素
+    const installOutput = document.createElement('div');
+    installOutput.className = 'install-output';
+    installOutput.textContent = '开始安装...\n';
+    
+    // 重置进度条
+    progressBar.style.width = '0%';
+    progressBar.textContent = '0%';
+    progressText.textContent = '';
     
     // 切换到执行安装标签页
     switchTab('execute');
@@ -214,8 +248,10 @@ async function startInstall() {
     // 获取当前解压路径
     const pathInput = document.getElementById('pathInput').value;
     if (!pathInput) {
-        const output = document.querySelector('.install-output');
-        output.textContent = '错误: 请先载入安装包';
+        installOutput.textContent = '错误: 请先载入安装包';
+        executeContainer.innerHTML = '';
+        executeContainer.appendChild(installOutput);
+        progressText.textContent = '安装失败';
         return;
     }
     
@@ -236,19 +272,46 @@ async function startInstall() {
         
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        const output = document.querySelector('.install-output');
+        
+        // 清空容器并添加输出元素
+        executeContainer.innerHTML = '';
+        executeContainer.appendChild(installOutput);
+        
+        // 用于跟踪安装进度的变量
+        let totalSteps = 6; // 假设总共有6个步骤
+        let currentStep = 0;
         
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
             
             const text = decoder.decode(value, { stream: true });
-            output.textContent += text;
-            output.scrollTop = output.scrollHeight; // 自动滚动到底部
+            installOutput.textContent += text;
+            installOutput.scrollTop = installOutput.scrollHeight; // 自动滚动到底部
+            
+            // 更新进度条
+            if (text.includes('步骤') || text.includes('安装完成')) {
+                currentStep++;
+                const progress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                progressText.textContent = text.includes('安装完成') ? 
+                    '安装完成!' : 
+                    `正在执行步骤 ${currentStep}/${totalSteps}`;
+            }
         }
+        
+        // 安装完成，设置进度条为100%
+        progressBar.style.width = '100%';
+        progressBar.textContent = '100%';
+        progressText.textContent = '安装完成!';
+        
     } catch (error) {
-        const output = document.querySelector('.install-output');
-        output.textContent += '\n安装过程出错: ' + error.message;
+        installOutput.textContent += '\n安装过程出错: ' + error.message;
+        
+        // 错误时设置进度条为红色
+        progressBar.style.backgroundColor = '#f44336';
+        progressText.textContent = '安装失败: ' + error.message;
     }
 }
 
@@ -476,19 +539,8 @@ async function nextUpgradeStep() {
         
         // 执行更新操作
         await performUpdate();
-    } else if (activeStepId === 'step-update') {
-        nextStepId = 'step-finish';
-        nextContentId = 'content-finish';
-        
-        // 激活下一步骤
-        document.getElementById(nextStepId).classList.add('active');
-        
-        // 显示下一步骤内容
-        document.getElementById(nextContentId).classList.add('active');
-        
-        // 执行完成升级操作
-        await completeUpgrade();
     }
+    // 移除对step-update后续步骤的处理
 }
 
 // 执行备份
@@ -516,7 +568,13 @@ async function performBackup() {
 // 执行更新
 async function performUpdate() {
     const updateProgress = document.getElementById('update-progress');
-    // 注意：updateProgress.textContent = '更新中...' 已经在nextUpgradeStep中设置，这里不需要重复
+    const progressBar = document.getElementById('update-progress-bar');
+    const progressText = document.getElementById('update-progress-text');
+    
+    // 重置进度条
+    progressBar.style.width = '0%';
+    progressBar.textContent = '0%';
+    progressText.textContent = '';
     
     // 获取当前升级包路径
     const dirPath = window.currentUpgradePath;
@@ -524,6 +582,8 @@ async function performUpdate() {
     
     if (!dirPath) {
         updateProgress.textContent = '错误: 无法获取升级包路径';
+        progressText.textContent = '更新失败: 无法获取升级包路径';
+        progressBar.style.backgroundColor = '#f44336';
         return;
     }
     
@@ -547,6 +607,10 @@ async function performUpdate() {
         // 清空之前的内容
         updateProgress.textContent = '';
         
+        // 用于跟踪更新进度的变量
+        let totalSteps = 6; // 假设总共有6个步骤
+        let currentStep = 0;
+        
         while (true) {
             const { value, done } = await reader.read();
             if (done) {
@@ -558,6 +622,23 @@ async function performUpdate() {
             console.log('收到更新流数据:', text);
             updateProgress.textContent += text;
             updateProgress.scrollTop = updateProgress.scrollHeight; // 自动滚动到底部
+            
+            // 更新进度条
+            if (text.includes('步骤') || text.includes('更新组件完成') || text.includes('验证通过')) {
+                currentStep++;
+                const progress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                
+                // 更新进度文本
+                if (text.includes('更新组件完成') || text.includes('验证通过')) {
+                    progressText.textContent = '更新完成!';
+                } else if (text.match(/步骤(\d+)/)) {
+                    const stepMatch = text.match(/步骤(\d+)/);
+                    const stepNumber = stepMatch ? stepMatch[1] : currentStep;
+                    progressText.textContent = `正在执行步骤 ${stepNumber}/${totalSteps}`;
+                }
+            }
         }
         
         // 更新完成后，检查是否成功
@@ -573,43 +654,25 @@ async function performUpdate() {
             document.getElementById('step-update').classList.add('completed');
             document.getElementById('step-finish').classList.add('completed');
             
-            // 不再自动跳转到结束步骤
-            // 不再隐藏当前步骤内容
-            // 不再执行completeUpgrade操作
+            // 隐藏更新页面的下一步按钮
+            const updateNextButton = document.querySelector('#content-update .next-button');
+            if (updateNextButton) {
+                updateNextButton.style.display = 'none';
+            }
+            
+            // 确保进度条显示100%
+            progressBar.style.width = '100%';
+            progressBar.textContent = '100%';
+            progressText.textContent = '更新完成!';
         }
     } catch (error) {
         console.error('更新过程出错:', error);
         updateProgress.textContent += '\n更新过程出错: ' + error.message;
-    }
-}
-
-// 完成升级
-async function completeUpgrade() {
-    const upgradeResult = document.getElementById('upgrade-result');
-    upgradeResult.textContent = '正在完成升级...';
-    
-    try {
-        const response = await fetch('/api/upgrade/complete', {
-            method: 'POST'
-        });
         
-        const data = await response.json();
-        
-        if (data.success) {
-            upgradeResult.textContent = '升级成功: ' + (data.message || '');
-        } else {
-            upgradeResult.textContent = '升级失败: ' + (data.error || '未知错误');
-        }
-    } catch (error) {
-        upgradeResult.textContent = '升级过程出错: ' + error.message;
+        // 错误时设置进度条为红色
+        progressBar.style.backgroundColor = '#f44336';
+        progressText.textContent = '更新失败: ' + error.message;
     }
-}
-
-// 结束升级流程
-function finishUpgrade() {
-    // 切换回配置初始化标签页
-    switchTab('init');
-    alert('升级已完成');
 }
 
 // 加载历史版本信息
@@ -764,6 +827,5 @@ window.startInstall = startInstall;
 window.loadUpgradePackage = loadUpgradePackage;
 window.startUpgrade = startUpgrade;
 window.nextUpgradeStep = nextUpgradeStep;
-window.finishUpgrade = finishUpgrade;
 window.loadHistoryVersions = loadHistoryVersions; // 导出历史版本加载函数
 window.saveUpgradeSettings = saveUpgradeSettings; // 导出保存升级设置函数
