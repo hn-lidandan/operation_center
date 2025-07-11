@@ -473,3 +473,15 @@
 2025-07-10 22:07:10.483475000 [INFO ] <actix_server::builder:310>:starting 10 workers
 2025-07-10 22:07:10.483579000 [INFO ] <actix_server::server:191>:Actix runtime found; starting in Actix runtime
 2025-07-10 22:07:10.483619000 [INFO ] <actix_server::server:197>:starting service: "actix-web-service-0.0.0.0:8080", workers: 10, listening on: 0.0.0.0:8080
+2025-07-11 08:56:45.167976000 [INFO ] <actix_server::server:333>:SIGINT received; starting forced shutdown
+2025-07-11 08:56:45.170945000 [INFO ] <actix_server::accept:143>:accept thread stopped
+2025-07-11 08:56:45.171577000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.171878000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172072000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172205000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172328000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172533000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172687000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172834000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.172936000 [INFO ] <actix_server::worker:593>:shutting down idle worker
+2025-07-11 08:56:45.173034000 [INFO ] <actix_server::worker:593>:shutting down idle worker

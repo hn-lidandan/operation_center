@@ -480,8 +480,14 @@
                         
                         <!-- 本地设置 - 增加高度 -->
                         <div class="section-label">本地设置：</div>
-                        <div class="local-settings-box" id="local-settings">
-                            <!-- 本地设置信息将在这里显示 -->
+                        <div class="local-settings-box">
+                            <div id="upgrade-settings-editor" class="settings-editor">
+                                <!-- 设置项将在这里动态生成 -->
+                            </div>
+                        </div>
+                        <!-- 添加保存配置按钮 -->
+                        <div class="buttons-container" style="margin-top: 10px;">
+                            <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// 引入mock服务（可以在不需要时轻松删除这一行）
+import './mockInit.js';
+
 // 配置axios基础URL - 使用相对路径，通过代理访问后端
 const api = axios.create({
     baseURL: '',  // 移除 '/path' 前缀，使用相对路径
@@ -256,7 +259,7 @@ async function loadUpgradePackage() {
         alert('请输入升级包路径');
         return;
     }
-    
+
     try {
         // 调用正确的unzip API
         const response = await fetch('http://localhost:8080/api/unzip', {
@@ -281,6 +284,7 @@ async function loadUpgradePackage() {
             // 更新当前版本信息区域
             document.getElementById('current-version').innerHTML = '<div>正在加载版本信息...</div>';
             
+            // 1. 加载当前系统版本信息
             try {
                 const infoResponse = await fetch(`http://localhost:8080/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
                 if (infoResponse.ok) {
@@ -295,6 +299,61 @@ async function loadUpgradePackage() {
             } catch (error) {
                 document.getElementById('current-version').innerHTML = 
                     `<div>获取版本信息出错: ${error.message}</div>`;
+            }
+            
+            // 2. 加载历史版本信息
+            document.getElementById('history-versions').innerHTML = '<div>正在加载历史版本...</div>';
+            try {
+                const historyResponse = await fetch('http://localhost:8080/api/history_version', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ dir_path: dirPath })
+                });
+                
+                if (historyResponse.ok) {
+                    const historyInfo = await historyResponse.text();
+                    
+                    // 显示历史版本信息
+                    const historyVersionsElement = document.getElementById('history-versions');
+                    historyVersionsElement.innerHTML = `<div style="white-space: pre-wrap;">${historyInfo}</div>`;
+                } else {
+                    const errorText = await historyResponse.text();
+                    document.getElementById('history-versions').innerHTML = 
+                        `<div>获取历史版本失败: ${errorText}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('history-versions').innerHTML = 
+                    `<div>获取历史版本出错: ${error.message}</div>`;
+            }
+            
+            // 3. 加载本地设置
+            const upgradeSettingsEditor = document.getElementById('upgrade-settings-editor');
+            upgradeSettingsEditor.innerHTML = '<div>正在加载本地设置...</div>';
+            try {
+                const settingsResponse = await fetch('http://localhost:8080/api/find_setting_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ dir_path: dirPath })
+                });
+                
+                if (settingsResponse.ok) {
+                    const settingsData = await settingsResponse.json();
+                    
+                    // 使用与配置初始化页面相同的方式显示可编辑的设置
+                    loadUpgradeSettings(settingsData);
+                    
+                    // 存储当前路径，用于保存配置时使用
+                    window.currentUpgradePath = dirPath;
+                } else {
+                    const errorText = await settingsResponse.text();
+                    upgradeSettingsEditor.innerHTML = `<div>获取本地设置失败: ${errorText}</div>`;
+                }
+            } catch (error) {
+                upgradeSettingsEditor.innerHTML = `<div>获取本地设置出错: ${error.message}</div>`;
             }
         } else {
             alert('载入失败: ' + text);
@@ -538,6 +597,75 @@ function showVersionDetails(version) {
     currentVersionElement.innerHTML = detailsContent || '无详细信息';
 }
 
+// 加载升级设置
+function loadUpgradeSettings(settings) {
+    const settingsEditor = document.getElementById('upgrade-settings-editor');
+    settingsEditor.innerHTML = '';
+    
+    if (!settings || Object.keys(settings).length === 0) {
+        settingsEditor.textContent = '无可用设置';
+        return;
+    }
+    
+    for (const key in settings) {
+        const row = document.createElement('div');
+        row.className = 'settings-row';
+        
+        const keyElement = document.createElement('div');
+        keyElement.className = 'settings-key';
+        keyElement.textContent = key;
+        
+        const valueElement = document.createElement('input');
+        valueElement.className = 'settings-value';
+        valueElement.value = settings[key];
+        valueElement.dataset.key = key;
+        
+        row.appendChild(keyElement);
+        row.appendChild(valueElement);
+        settingsEditor.appendChild(row);
+    }
+}
+
+// 保存升级设置
+async function saveUpgradeSettings() {
+    const settingsInputs = document.querySelectorAll('#upgrade-settings-editor .settings-value');
+    const settings = {};
+    
+    settingsInputs.forEach(input => {
+        settings[input.dataset.key] = input.value;
+    });
+    
+    // 获取当前升级包路径
+    const dirPath = window.currentUpgradePath;
+    if (!dirPath) {
+        alert('请先载入升级包');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settings)  // 直接发送settings对象，符合后端SaveSettingsRequest结构的flatten特性
+        });
+        
+        const text = await response.text();
+        
+        if (response.ok) {
+            alert('设置已保存');
+            console.log('保存配置成功:', text);
+        } else {
+            alert('保存失败: ' + text);
+            console.error('保存配置失败:', text);
+        }
+    } catch (error) {
+        alert('请求错误: ' + error.message);
+        console.error('保存配置异常:', error);
+    }
+}
+
 // 导出函数到全局作用域，以便HTML中调用
 window.switchTab = switchTab;
 window.handleProcess = handleProcess;
@@ -548,3 +676,4 @@ window.startUpgrade = startUpgrade;
 window.nextUpgradeStep = nextUpgradeStep;
 window.finishUpgrade = finishUpgrade;
 window.loadHistoryVersions = loadHistoryVersions; // 导出历史版本加载函数
+window.saveUpgradeSettings = saveUpgradeSettings; // 导出保存升级设置函数
