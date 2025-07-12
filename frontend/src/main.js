@@ -202,7 +202,7 @@ async function saveSettings() {
     
     try {
         // 使用正确的API端点并直接发送settings对象（不需要嵌套）
-        const response = await fetch(`http://localhost:8080/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
+        const response = await fetch(`/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -262,7 +262,7 @@ async function startInstall() {
     
     try {
         // 1. 先获取组件信息
-        const componentsResponse = await fetch('http://localhost:8080/api/setup/components', {
+        const componentsResponse = await fetch('/api/setup/components', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -283,7 +283,7 @@ async function startInstall() {
         executeContainer.appendChild(installOutput);
         
         // 2. 调用setup API执行安装
-        const response = await fetch('http://localhost:8080/api/setup', {
+        const response = await fetch('/api/setup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -353,7 +353,7 @@ async function loadUpgradePackage() {
 
     try {
         // 调用正确的unzip API
-        const response = await fetch('http://localhost:8080/api/unzip', {
+        const response = await fetch('/api/unzip', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -381,7 +381,7 @@ async function loadUpgradePackage() {
             
             // 1. 加载当前系统版本信息
             try {
-                const infoResponse = await fetch(`http://localhost:8080/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
+                const infoResponse = await fetch(`/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
                 if (infoResponse.ok) {
                     const versionInfo = await infoResponse.text();
                     document.getElementById('current-version').innerHTML = 
@@ -399,7 +399,7 @@ async function loadUpgradePackage() {
             // 2. 加载历史版本信息
             document.getElementById('history-versions').innerHTML = '<div>正在加载历史版本...</div>';
             try {
-                const historyResponse = await fetch('http://localhost:8080/api/history_version', {
+                const historyResponse = await fetch('/api/history_version', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -427,7 +427,7 @@ async function loadUpgradePackage() {
             const upgradeSettingsEditor = document.getElementById('upgrade-settings-editor');
             upgradeSettingsEditor.innerHTML = '<div>正在加载本地设置...</div>';
             try {
-                const settingsResponse = await fetch('http://localhost:8080/api/find_setting_file', {
+                const settingsResponse = await fetch('/api/find_setting_file', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -617,7 +617,7 @@ async function performUpdate() {
     
     try {
         // 1. 先获取组件信息
-        const componentsResponse = await fetch('http://localhost:8080/api/update/components', {
+        const componentsResponse = await fetch('/api/update/components', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -638,7 +638,7 @@ async function performUpdate() {
         
         // 2. 调用update API执行更新
         console.log('开始调用更新API, 参数:', { dir_path: dirPath });
-        const response = await fetch('http://localhost:8080/api/update', {
+        const response = await fetch('/api/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -846,7 +846,7 @@ async function saveUpgradeSettings() {
     }
     
     try {
-        const response = await fetch(`http://localhost:8080/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
+        const response = await fetch(`/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
