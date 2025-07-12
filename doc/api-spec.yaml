@@ -1,0 +1,565 @@
+openapi: 3.0.0
+info:
+  title: Operation Center API
+  description: Operation Center 系统的后端 API 接口文档
+  version: 1.0.0
+  contact:
+    name: Operation Center Team
+servers:
+  - url: http://localhost:8080
+    description: 本地开发服务器
+
+paths:
+  /api/unzip:
+    post:
+      summary: 解压安装包
+      description: 解压指定路径的安装包到同级目录
+      operationId: unzipPackage
+      tags:
+        - 安装管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnzipRequest'
+      responses:
+        '200':
+          description: 解压成功
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "解压成功! 输出: 已解压 /path/to/file.zip 到同级目录"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/find_info_file:
+    get:
+      summary: 获取版本信息
+      description: 获取指定目录中的版本信息文件内容
+      operationId: getVersionInfo
+      tags:
+        - 信息查询
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      responses:
+        '200':
+          description: 成功获取版本信息
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  版本: 1.0.0-mock
+                  发布日期: 2025-07-12
+                  描述: 这是一个模拟的版本信息
+                  组件:
+                    - 名称: 核心组件
+                      版本: 1.0.0
+                    - 名称: 界面组件
+                      版本: 1.2.3
+                    - 名称: 数据组件
+                      版本: 0.9.5
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/find_setting_file:
+    get:
+      summary: 获取配置信息(GET)
+      description: 通过GET方式获取指定目录中的配置文件内容
+      operationId: getSettingsGet
+      tags:
+        - 配置管理
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      responses:
+        '200':
+          description: 成功获取配置信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+    post:
+      summary: 获取配置信息(POST)
+      description: 通过POST方式获取指定目录中的配置文件内容
+      operationId: getSettingsPost
+      tags:
+        - 配置管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 成功获取配置信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/save_settings:
+    post:
+      summary: 保存配置
+      description: 将配置信息保存到指定目录
+      operationId: saveSettings
+      tags:
+        - 配置管理
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: 配置保存成功
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "配置保存成功"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/setup:
+    post:
+      summary: 执行安装
+      description: 执行系统安装流程
+      operationId: setupSystem
+      tags:
+        - 安装管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 安装进度流
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+                description: |
+                  安装进度信息的流式响应。响应应包含以下格式的文本：
+                  1. 开始时应包含总步骤数信息：`总步骤数:X`，其中X为整数
+                  2. 每个步骤应标记为：`步骤N/X: 步骤描述...`，其中N为当前步骤号，X为总步骤数
+                  3. 最后应包含完成标记：`安装完成!`
+                  
+                  示例：
+                  ```
+                  开始安装...
+                  总步骤数:4
+                  步骤1/4: 准备环境...
+                  步骤2/4: 复制文件...
+                  步骤3/4: 配置系统...
+                  步骤4/4: 启动服务...
+                  安装完成!
+                  ```
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/history_version:
+    post:
+      summary: 获取历史版本信息
+      description: 获取指定目录中的历史版本信息
+      operationId: getHistoryVersionInfo
+      tags:
+        - 信息查询
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 成功获取历史版本信息
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  历史版本记录:
+
+                  版本: 0.9.0-beta
+                  发布日期: 2023-01-05
+                  描述: 测试版本
+
+                  版本: 1.0.0
+                  发布日期: 2023-02-15
+                  描述: 首次正式发布
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /versions/history:
+    get:
+      summary: 获取版本历史详情
+      description: 获取系统的版本历史详细信息
+      operationId: getVersionsHistory
+      tags:
+        - 信息查询
+      responses:
+        '200':
+          description: 成功获取版本历史详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionHistoryResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/upgrade/analysis:
+    get:
+      summary: 升级分析
+      description: 分析当前系统与升级系统的差异
+      operationId: analyzeUpgrade
+      tags:
+        - 升级管理
+      responses:
+        '200':
+          description: 成功获取升级分析结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeAnalysisResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/upgrade/backup:
+    post:
+      summary: 执行备份
+      description: 在升级前执行系统备份
+      operationId: backupSystem
+      tags:
+        - 升级管理
+      responses:
+        '200':
+          description: 备份成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/update:
+    post:
+      summary: 执行更新
+      description: 执行系统更新流程
+      operationId: updateSystem
+      tags:
+        - 升级管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 更新进度流
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+                description: |
+                  更新进度信息的流式响应。响应应包含以下格式的文本：
+                  1. 开始时应包含总步骤数信息：`总步骤数:X`，其中X为整数
+                  2. 每个步骤应标记为：`步骤N/X: 步骤描述...`，其中N为当前步骤号，X为总步骤数
+                  3. 每个步骤可能包含多个子任务
+                  4. 最后应包含完成标记：`更新组件完成!` 或 `验证通过`
+                  
+                  示例：
+                  ```
+                  开始更新组件...
+                  总步骤数:6
+                  步骤1/6: 停止服务...
+                    - 停止网关服务
+                    - 停止数据服务
+                  步骤2/6: 备份当前组件...
+                  ...
+                  更新组件完成! 当前系统版本: 1.2.0
+                  ```
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/upgrade/complete:
+    post:
+      summary: 升级完成
+      description: 标记升级流程完成
+      operationId: completeUpgrade
+      tags:
+        - 升级管理
+      responses:
+        '200':
+          description: 升级完成
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpgradeCompleteResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    UnzipRequest:
+      type: object
+      required:
+        - zip_path
+      properties:
+        zip_path:
+          type: string
+          description: 安装包路径
+          example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app.zip"
+
+    DirPathRequest:
+      type: object
+      required:
+        - dir_path
+      properties:
+        dir_path:
+          type: string
+          description: 解压后的目录路径
+          example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app"
+
+    Settings:
+      type: object
+      description: 系统配置项
+      properties:
+        host:
+          type: string
+          description: 主机名
+          example: "localhost"
+        port:
+          type: string
+          description: 端口号
+          example: "8080"
+        username:
+          type: string
+          description: 用户名
+          example: "admin"
+        password:
+          type: string
+          description: 密码
+          example: "******"
+        db_name:
+          type: string
+          description: 数据库名称
+          example: "operation_center"
+        log_level:
+          type: string
+          description: 日志级别
+          example: "info"
+        auto_start:
+          type: string
+          description: 是否自动启动
+          example: "true"
+        backup_enabled:
+          type: string
+          description: 是否启用备份
+          example: "true"
+        max_log_size:
+          type: string
+          description: 最大日志大小
+          example: "100MB"
+        update_channel:
+          type: string
+          description: 更新渠道
+          example: "stable"
+      additionalProperties:
+        type: string
+        description: 其他配置项
+
+    VersionComponent:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 组件名称
+          example: "核心组件"
+        version:
+          type: string
+          description: 组件版本
+          example: "1.0.0"
+
+    VersionInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 版本名称
+          example: "版本 1.0.0"
+        date:
+          type: string
+          description: 发布日期
+          example: "2023-01-15"
+        description:
+          type: string
+          description: 版本描述
+          example: "初始版本"
+        components:
+          type: array
+          description: 组件列表
+          items:
+            $ref: '#/components/schemas/VersionComponent'
+
+    VersionHistoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        versions:
+          type: array
+          description: 版本历史列表
+          items:
+            $ref: '#/components/schemas/VersionInfo'
+
+    UpgradeAnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        currentSystem:
+          type: string
+          description: 当前系统信息
+          example: "当前系统版本: 1.0.0\n发布日期: 2023-01-15\n组件数量: 2"
+        upgradeSystem:
+          type: string
+          description: 升级系统信息
+          example: "升级系统版本: 1.2.0\n发布日期: 2023-06-10\n组件数量: 3"
+        upgradeItems:
+          type: string
+          description: 需要升级的项目
+          example: "需要升级的组件:\n- 核心组件: 1.0.0 -> 1.1.0\n- 界面组件: 1.0.0 -> 1.2.0\n- 新增: 数据组件 0.9.5"
+
+    BackupResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        message:
+          type: string
+          description: 备份信息
+          example: "系统已成功备份至 /backups/system-20230710-120000.bak"
+
+    UpgradeCompleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        message:
+          type: string
+          description: 完成信息
+          example: "系统升级已完成，当前版本 1.2.0"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: 错误信息
+        code:
+          type: integer
+          description: 错误代码
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "请求参数不正确"
+            code: 400
+
+    NotFound:
+      description: 资源未找到
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "请求的资源不存在"
+            code: 404
+
+    ServerError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "服务器内部错误"
+            code: 500
+
+tags:
+  - name: 安装管理
+    description: 系统安装相关接口
+  - name: 配置管理
+    description: 系统配置相关接口
+  - name: 信息查询
+    description: 系统信息查询接口
+  - name: 升级管理
+    description: 系统升级相关接口 

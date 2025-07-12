@@ -135,6 +135,7 @@
             flex-direction: column;
             flex-grow: 1;
             margin-top: 15px;
+            width: 100%;
         }
         .result {
             padding: 20px;
@@ -146,6 +147,7 @@
             overflow-y: auto; /* 添加垂直滚动条 */
             height: 300px; /* 设置固定高度，而不是使用max-height和flex-grow */
             width: 100%; /* 确保宽度填满父容器 */
+            box-sizing: border-box;
         }
         .settings-container {
             display: flex;
@@ -485,7 +487,9 @@
             <div id="loading" class="loading">处理中...</div>
             <div class="result-container">
                 <label class="label">版本信息：</label>
-                <div id="result" class="result"></div>
+                <div class="settings-container">
+                    <div id="result" class="result"></div>
+                </div>
             </div>
         </div>
         
@@ -518,7 +522,21 @@
 
             <!-- 升级准备的内容区域 - 按照草图修改 -->
             <div class="upgrade-prepare-content">
-                <!-- 历史版本和主内容区域容器 -->
+                <!-- 安装包地址和按钮区域 - 移到顶部 -->
+                <div class="upgrade-form-group">
+                    <label class="label">安装包地址：</label>
+                    <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
+                    <div class="buttons-inline">
+                        <button onclick="loadUpgradePackage()" class="btn">载入</button>
+                        <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
+                        <button onclick="startUpgrade()" class="btn">启动升级</button>
+                    </div>
+                </div>
+                
+                <!-- 添加间距 -->
+                <div style="margin-top: 40px;"></div>
+                
+                <!-- 历史版本和主内容区域容器 - 移到下方 -->
                 <div class="history-version-container">
                     <!-- 历史版本 -->
                     <div class="history-version-section">
@@ -545,17 +563,6 @@
                                 <!-- 设置项将在这里动态生成 -->
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- 安装包地址和按钮区域 -->
-                <div class="upgrade-form-group">
-                    <label class="label">安装包地址：</label>
-                    <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
-                    <div class="buttons-inline">
-                        <button onclick="loadUpgradePackage()" class="btn">载入</button>
-                        <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
-                        <button onclick="startUpgrade()" class="btn">启动升级</button>
                     </div>
                 </div>
             </div>

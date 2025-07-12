@@ -278,7 +278,7 @@ async function startInstall() {
         executeContainer.appendChild(installOutput);
         
         // 用于跟踪安装进度的变量
-        let totalSteps = 6; // 假设总共有6个步骤
+        let totalSteps = null; // 初始化为null，等待从后端获取
         let currentStep = 0;
         
         while (true) {
@@ -289,15 +289,38 @@ async function startInstall() {
             installOutput.textContent += text;
             installOutput.scrollTop = installOutput.scrollHeight; // 自动滚动到底部
             
+            // 检查是否包含总步骤信息
+            const totalStepsMatch = text.match(/总步骤数:(\d+)/);
+            if (totalStepsMatch && totalSteps === null) {
+                totalSteps = parseInt(totalStepsMatch[1], 10);
+                console.log(`从后端获取到总步骤数: ${totalSteps}`);
+            }
+            
+            // 如果还未获取到总步骤数，使用默认值
+            if (totalSteps === null) {
+                totalSteps = 6; // 兼容旧版后端，默认为6步
+            }
+            
             // 更新进度条
             if (text.includes('步骤') || text.includes('安装完成')) {
                 currentStep++;
                 const progress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
-                progressText.textContent = text.includes('安装完成') ? 
-                    '安装完成!' : 
-                    `正在执行步骤 ${currentStep}/${totalSteps}`;
+                
+                // 更新进度文本
+                if (text.includes('安装完成')) {
+                    progressText.textContent = '安装完成!';
+                } else if (text.match(/步骤(\d+)\/(\d+)/)) {
+                    // 优先使用后端提供的步骤格式 "步骤X/Y"
+                    const stepMatch = text.match(/步骤(\d+)\/(\d+)/);
+                    progressText.textContent = `正在执行步骤 ${stepMatch[1]}/${stepMatch[2]}`;
+                } else if (text.match(/步骤(\d+)/)) {
+                    // 兼容旧格式
+                    const stepMatch = text.match(/步骤(\d+)/);
+                    const stepNumber = stepMatch ? stepMatch[1] : currentStep;
+                    progressText.textContent = `正在执行步骤 ${stepNumber}/${totalSteps}`;
+                }
             }
         }
         
@@ -608,7 +631,7 @@ async function performUpdate() {
         updateProgress.textContent = '';
         
         // 用于跟踪更新进度的变量
-        let totalSteps = 6; // 假设总共有6个步骤
+        let totalSteps = null; // 初始化为null，等待从后端获取
         let currentStep = 0;
         
         while (true) {
@@ -623,6 +646,18 @@ async function performUpdate() {
             updateProgress.textContent += text;
             updateProgress.scrollTop = updateProgress.scrollHeight; // 自动滚动到底部
             
+            // 检查是否包含总步骤信息
+            const totalStepsMatch = text.match(/总步骤数:(\d+)/);
+            if (totalStepsMatch && totalSteps === null) {
+                totalSteps = parseInt(totalStepsMatch[1], 10);
+                console.log(`从后端获取到总步骤数: ${totalSteps}`);
+            }
+            
+            // 如果还未获取到总步骤数，使用默认值
+            if (totalSteps === null) {
+                totalSteps = 6; // 兼容旧版后端，默认为6步
+            }
+            
             // 更新进度条
             if (text.includes('步骤') || text.includes('更新组件完成') || text.includes('验证通过')) {
                 currentStep++;
@@ -633,7 +668,12 @@ async function performUpdate() {
                 // 更新进度文本
                 if (text.includes('更新组件完成') || text.includes('验证通过')) {
                     progressText.textContent = '更新完成!';
+                } else if (text.match(/步骤(\d+)\/(\d+)/)) {
+                    // 优先使用后端提供的步骤格式 "步骤X/Y"
+                    const stepMatch = text.match(/步骤(\d+)\/(\d+)/);
+                    progressText.textContent = `正在执行步骤 ${stepMatch[1]}/${stepMatch[2]}`;
                 } else if (text.match(/步骤(\d+)/)) {
+                    // 兼容旧格式
                     const stepMatch = text.match(/步骤(\d+)/);
                     const stepNumber = stepMatch ? stepMatch[1] : currentStep;
                     progressText.textContent = `正在执行步骤 ${stepNumber}/${totalSteps}`;

@@ -128,11 +128,11 @@ const mockDataStore = {
       // 这个API需要返回流式响应
       return {
         stream: [
-          { text: "开始安装...\n", delay: 300 },
-          { text: "步骤1: 准备环境...\n", delay: 1000 },
-          { text: "步骤2: 复制文件...\n", delay: 1500 },
-          { text: "步骤3: 配置系统...\n", delay: 2000 },
-          { text: "步骤4: 启动服务...\n", delay: 1800 },
+          { text: "开始安装...\n总步骤数:4\n", delay: 300 },
+          { text: "步骤1/4: 准备环境...\n", delay: 1000 },
+          { text: "步骤2/4: 复制文件...\n", delay: 1500 },
+          { text: "步骤3/4: 配置系统...\n", delay: 2000 },
+          { text: "步骤4/4: 启动服务...\n", delay: 1800 },
           { text: "安装完成!\n", delay: 1000 }
         ]
       };
@@ -146,38 +146,38 @@ const mockDataStore = {
       // 这个API需要返回流式响应
       return {
         stream: [
-          { text: "开始更新组件...\n", delay: 300 },
-          { text: "步骤1: 停止服务...\n", delay: 800 },
+          { text: "开始更新组件...\n总步骤数:6\n", delay: 300 },
+          { text: "步骤1/6: 停止服务...\n", delay: 800 },
           { text: "  - 停止网关服务\n", delay: 400 },
           { text: "  - 停止数据服务\n", delay: 500 },
           { text: "  - 停止任务调度服务\n", delay: 600 },
           { text: "✓ 所有服务已停止\n", delay: 300 },
           
-          { text: "步骤2: 备份当前组件...\n", delay: 1000 },
+          { text: "步骤2/6: 备份当前组件...\n", delay: 1000 },
           { text: "  - 备份配置文件\n", delay: 600 },
           { text: "  - 备份数据库\n", delay: 1200 },
           { text: "  - 备份应用程序文件\n", delay: 800 },
           { text: "✓ 备份完成，存储在 /backup/20250617/\n", delay: 500 },
           
-          { text: "步骤3: 复制新组件...\n", delay: 1000 },
+          { text: "步骤3/6: 复制新组件...\n", delay: 1000 },
           { text: "  - 更新核心组件 (1.0.0 -> 1.1.0)\n", delay: 800 },
           { text: "  - 更新界面组件 (1.0.0 -> 1.2.0)\n", delay: 700 },
           { text: "  - 安装新组件: 数据组件 0.9.5\n", delay: 900 },
           { text: "✓ 所有组件已更新\n", delay: 400 },
           
-          { text: "步骤4: 更新配置文件...\n", delay: 800 },
+          { text: "步骤4/6: 更新配置文件...\n", delay: 800 },
           { text: "  - 合并用户配置\n", delay: 500 },
           { text: "  - 应用新的默认设置\n", delay: 600 },
           { text: "  - 更新数据库结构\n", delay: 1000 },
           { text: "✓ 配置更新完成\n", delay: 300 },
           
-          { text: "步骤5: 重启服务...\n", delay: 800 },
+          { text: "步骤5/6: 重启服务...\n", delay: 800 },
           { text: "  - 启动数据服务\n", delay: 700 },
           { text: "  - 启动任务调度服务\n", delay: 600 },
           { text: "  - 启动网关服务\n", delay: 800 },
           { text: "✓ 所有服务已启动\n", delay: 400 },
           
-          { text: "步骤6: 验证更新...\n", delay: 700 },
+          { text: "步骤6/6: 验证更新...\n", delay: 700 },
           { text: "  - 检查服务状态\n", delay: 500 },
           { text: "  - 验证数据完整性\n", delay: 600 },
           { text: "  - 执行系统自检\n", delay: 800 },
