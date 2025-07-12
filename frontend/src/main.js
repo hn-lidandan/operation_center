@@ -261,7 +261,28 @@ async function startInstall() {
         : pathInput;
     
     try {
-        // 调用正确的setup API
+        // 1. 先获取组件信息
+        const componentsResponse = await fetch('http://localhost:8080/api/setup/components', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ dir_path: dirPath })
+        });
+        
+        if (!componentsResponse.ok) {
+            throw new Error('获取组件信息失败');
+        }
+        
+        const componentsData = await componentsResponse.json();
+        const totalComponents = componentsData.totalComponents || 0;
+        console.log(`获取到组件数量: ${totalComponents}`);
+        
+        // 清空容器并添加输出元素
+        executeContainer.innerHTML = '';
+        executeContainer.appendChild(installOutput);
+        
+        // 2. 调用setup API执行安装
         const response = await fetch('http://localhost:8080/api/setup', {
             method: 'POST',
             headers: {
@@ -273,13 +294,8 @@ async function startInstall() {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         
-        // 清空容器并添加输出元素
-        executeContainer.innerHTML = '';
-        executeContainer.appendChild(installOutput);
-        
         // 用于跟踪安装进度的变量
-        let totalSteps = null; // 初始化为null，等待从后端获取
-        let currentStep = 0;
+        let currentComponent = 0;
         
         while (true) {
             const { value, done } = await reader.read();
@@ -289,42 +305,31 @@ async function startInstall() {
             installOutput.textContent += text;
             installOutput.scrollTop = installOutput.scrollHeight; // 自动滚动到底部
             
-            // 检查是否包含总步骤信息
-            const totalStepsMatch = text.match(/总步骤数:(\d+)/);
-            if (totalStepsMatch && totalSteps === null) {
-                totalSteps = parseInt(totalStepsMatch[1], 10);
-                console.log(`从后端获取到总步骤数: ${totalSteps}`);
-            }
-            
-            // 如果还未获取到总步骤数，使用默认值
-            if (totalSteps === null) {
-                totalSteps = 6; // 兼容旧版后端，默认为6步
-            }
-            
-            // 更新进度条
-            if (text.includes('步骤') || text.includes('安装完成')) {
-                currentStep++;
-                const progress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
+            // 检查是否包含组件标记
+            if (text.includes('组件:')) {
+                currentComponent++;
+                const progress = Math.min(Math.round((currentComponent / totalComponents) * 100), 100);
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
                 
-                // 更新进度文本
-                if (text.includes('安装完成')) {
-                    progressText.textContent = '安装完成!';
-                } else if (text.match(/步骤(\d+)\/(\d+)/)) {
-                    // 优先使用后端提供的步骤格式 "步骤X/Y"
-                    const stepMatch = text.match(/步骤(\d+)\/(\d+)/);
-                    progressText.textContent = `正在执行步骤 ${stepMatch[1]}/${stepMatch[2]}`;
-                } else if (text.match(/步骤(\d+)/)) {
-                    // 兼容旧格式
-                    const stepMatch = text.match(/步骤(\d+)/);
-                    const stepNumber = stepMatch ? stepMatch[1] : currentStep;
-                    progressText.textContent = `正在执行步骤 ${stepNumber}/${totalSteps}`;
+                // 提取组件名称用于显示
+                const componentMatch = text.match(/组件:\s*([^\n]+)/);
+                if (componentMatch) {
+                    progressText.textContent = `正在安装组件 (${currentComponent}/${totalComponents}): ${componentMatch[1].trim()}`;
+                } else {
+                    progressText.textContent = `正在安装组件 (${currentComponent}/${totalComponents})`;
                 }
+            }
+            
+            // 检查是否安装完成
+            if (text.includes('安装完成!')) {
+                progressBar.style.width = '100%';
+                progressBar.textContent = '100%';
+                progressText.textContent = '安装完成!';
             }
         }
         
-        // 安装完成，设置进度条为100%
+        // 安装完成，确保进度条为100%
         progressBar.style.width = '100%';
         progressBar.textContent = '100%';
         progressText.textContent = '安装完成!';
@@ -611,8 +616,28 @@ async function performUpdate() {
     }
     
     try {
+        // 1. 先获取组件信息
+        const componentsResponse = await fetch('http://localhost:8080/api/update/components', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ dir_path: dirPath })
+        });
+        
+        if (!componentsResponse.ok) {
+            throw new Error('获取组件信息失败');
+        }
+        
+        const componentsData = await componentsResponse.json();
+        const totalComponents = componentsData.totalComponents || 0;
+        console.log(`获取到升级组件数量: ${totalComponents}`);
+        
+        // 清空之前的内容
+        updateProgress.textContent = '';
+        
+        // 2. 调用update API执行更新
         console.log('开始调用更新API, 参数:', { dir_path: dirPath });
-        // 调用update API，传入dir_path参数
         const response = await fetch('http://localhost:8080/api/update', {
             method: 'POST',
             headers: {
@@ -627,12 +652,8 @@ async function performUpdate() {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         
-        // 清空之前的内容
-        updateProgress.textContent = '';
-        
         // 用于跟踪更新进度的变量
-        let totalSteps = null; // 初始化为null，等待从后端获取
-        let currentStep = 0;
+        let currentComponent = 0;
         
         while (true) {
             const { value, done } = await reader.read();
@@ -646,38 +667,27 @@ async function performUpdate() {
             updateProgress.textContent += text;
             updateProgress.scrollTop = updateProgress.scrollHeight; // 自动滚动到底部
             
-            // 检查是否包含总步骤信息
-            const totalStepsMatch = text.match(/总步骤数:(\d+)/);
-            if (totalStepsMatch && totalSteps === null) {
-                totalSteps = parseInt(totalStepsMatch[1], 10);
-                console.log(`从后端获取到总步骤数: ${totalSteps}`);
-            }
-            
-            // 如果还未获取到总步骤数，使用默认值
-            if (totalSteps === null) {
-                totalSteps = 6; // 兼容旧版后端，默认为6步
-            }
-            
-            // 更新进度条
-            if (text.includes('步骤') || text.includes('更新组件完成') || text.includes('验证通过')) {
-                currentStep++;
-                const progress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
+            // 检查是否包含组件标记
+            if (text.includes('组件:')) {
+                currentComponent++;
+                const progress = Math.min(Math.round((currentComponent / totalComponents) * 100), 100);
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
                 
-                // 更新进度文本
-                if (text.includes('更新组件完成') || text.includes('验证通过')) {
-                    progressText.textContent = '更新完成!';
-                } else if (text.match(/步骤(\d+)\/(\d+)/)) {
-                    // 优先使用后端提供的步骤格式 "步骤X/Y"
-                    const stepMatch = text.match(/步骤(\d+)\/(\d+)/);
-                    progressText.textContent = `正在执行步骤 ${stepMatch[1]}/${stepMatch[2]}`;
-                } else if (text.match(/步骤(\d+)/)) {
-                    // 兼容旧格式
-                    const stepMatch = text.match(/步骤(\d+)/);
-                    const stepNumber = stepMatch ? stepMatch[1] : currentStep;
-                    progressText.textContent = `正在执行步骤 ${stepNumber}/${totalSteps}`;
+                // 提取组件名称用于显示
+                const componentMatch = text.match(/组件:\s*([^\n]+)/);
+                if (componentMatch) {
+                    progressText.textContent = `正在更新组件 (${currentComponent}/${totalComponents}): ${componentMatch[1].trim()}`;
+                } else {
+                    progressText.textContent = `正在更新组件 (${currentComponent}/${totalComponents})`;
                 }
+            }
+            
+            // 检查是否更新完成
+            if (text.includes('更新组件完成') || text.includes('验证通过')) {
+                progressBar.style.width = '100%';
+                progressBar.textContent = '100%';
+                progressText.textContent = '更新完成!';
             }
         }
         

@@ -353,6 +353,56 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/setup/components:
+    post:
+      summary: 获取安装组件信息
+      description: 获取安装包中包含的组件信息及数量
+      operationId: getSetupComponents
+      tags:
+        - 安装管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 安装组件信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/update/components:
+    post:
+      summary: 获取升级组件信息
+      description: 获取升级包中包含的组件信息及数量
+      operationId: getUpdateComponents
+      tags:
+        - 升级管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 升级组件信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 components:
   schemas:
     UnzipRequest:
@@ -522,6 +572,23 @@ components:
         code:
           type: integer
           description: 错误代码
+
+    ComponentsInfoResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        totalComponents:
+          type: integer
+          description: 总组件数量
+          example: 5
+        components:
+          type: array
+          description: 组件列表
+          items:
+            $ref: '#/components/schemas/VersionComponent'
 
   responses:
     BadRequest:
