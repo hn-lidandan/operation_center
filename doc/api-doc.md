@@ -95,7 +95,7 @@
 
 ### 配置管理
 
-#### 3. 获取配置信息(GET)
+#### 3. 获取配置信息
 
 **请求**
 - **路径**: `/api/find_setting_file`
@@ -116,37 +116,23 @@
   ```
 - **失败 (400/404/500)**: 错误信息
 
-#### 4. 获取配置信息(POST)
-
-**请求**
-- **路径**: `/api/find_setting_file`
-- **方法**: `POST`
-- **参数**:
-  ```json
-  {
-    "dir_path": "解压后的目录路径"
-  }
-  ```
-
-**响应**
-- **成功 (200)**: JSON格式的配置信息，与GET方式相同
-- **失败 (400/404/500)**: 错误信息
-
-#### 5. 保存配置
+#### 4. 保存配置
 
 **请求**
 - **路径**: `/api/save_settings`
 - **方法**: `POST`
 - **查询参数**: `dir_path=解压后的目录路径`
-- **参数**: 直接发送配置对象
+- **参数**: 配置对象需要包装在settings字段中
   ```json
   {
-    "host": "localhost",
-    "port": "8080",
-    "username": "admin",
-    "password": "******",
-    "db_name": "operation_center",
-    "log_level": "info"
+    "settings": {
+      "host": "localhost",
+      "port": "8080",
+      "username": "admin",
+      "password": "******",
+      "db_name": "operation_center",
+      "log_level": "info"
+    }
   }
   ```
 

@@ -10,6 +10,7 @@ servers:
     description: 本地开发服务器
 
 paths:
+  # 安装管理接口组
   /api/unzip:
     post:
       summary: 解压安装包
@@ -36,79 +37,13 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/find_info_file:
-    get:
-      summary: 获取版本信息
-      description: 获取指定目录中的版本信息文件内容
-      operationId: getVersionInfo
-      tags:
-        - 信息查询
-      parameters:
-        - name: dir_path
-          in: query
-          required: true
-          schema:
-            type: string
-          description: 解压后的目录路径
-      responses:
-        '200':
-          description: 成功获取版本信息
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: |
-                  版本: 1.0.0-mock
-                  发布日期: 2025-07-12
-                  描述: 这是一个模拟的版本信息
-                  组件:
-                    - 名称: 核心组件
-                      版本: 1.0.0
-                    - 名称: 界面组件
-                      版本: 1.2.3
-                    - 名称: 数据组件
-                      版本: 0.9.5
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/find_setting_file:
-    get:
-      summary: 获取配置信息(GET)
-      description: 通过GET方式获取指定目录中的配置文件内容
-      operationId: getSettingsGet
-      tags:
-        - 配置管理
-      parameters:
-        - name: dir_path
-          in: query
-          required: true
-          schema:
-            type: string
-          description: 解压后的目录路径
-      responses:
-        '200':
-          description: 成功获取配置信息
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Settings'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-    
+  /api/setup/components:
     post:
-      summary: 获取配置信息(POST)
-      description: 通过POST方式获取指定目录中的配置文件内容
-      operationId: getSettingsPost
+      summary: 获取安装组件信息
+      description: 获取安装包中包含的组件信息及数量
+      operationId: getSetupComponents
       tags:
-        - 配置管理
+        - 安装管理
       requestBody:
         required: true
         content:
@@ -117,46 +52,11 @@ paths:
               $ref: '#/components/schemas/DirPathRequest'
       responses:
         '200':
-          description: 成功获取配置信息
+          description: 安装组件信息
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Settings'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/save_settings:
-    post:
-      summary: 保存配置
-      description: 将配置信息保存到指定目录
-      operationId: saveSettings
-      tags:
-        - 配置管理
-      parameters:
-        - name: dir_path
-          in: query
-          required: true
-          schema:
-            type: string
-          description: 解压后的目录路径
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Settings'
-      responses:
-        '200':
-          description: 配置保存成功
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "配置保存成功"
+                $ref: '#/components/schemas/ComponentsInfoResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -207,6 +107,108 @@ paths:
                   ```
         '400':
           $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # 配置管理接口组
+  /api/find_setting_file:
+    get:
+      summary: 获取配置信息
+      description: 通过GET方式获取指定目录中的配置文件内容
+      operationId: getSettingsGet
+      tags:
+        - 配置管理
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      responses:
+        '200':
+          description: 成功获取配置信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/save_settings:
+    post:
+      summary: 保存配置
+      description: 将配置信息保存到指定目录
+      operationId: saveSettings
+      tags:
+        - 配置管理
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveSettingsRequest'
+      responses:
+        '200':
+          description: 配置保存成功
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "配置保存成功"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # 信息查询接口组
+  /api/find_info_file:
+    get:
+      summary: 获取版本信息
+      description: 获取指定目录中的版本信息文件内容
+      operationId: getVersionInfo
+      tags:
+        - 信息查询
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      responses:
+        '200':
+          description: 成功获取版本信息
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  版本: 1.0.0-mock
+                  发布日期: 2025-07-12
+                  描述: 这是一个模拟的版本信息
+                  组件:
+                    - 名称: 核心组件
+                      版本: 1.0.0
+                    - 名称: 界面组件
+                      版本: 1.2.3
+                    - 名称: 数据组件
+                      版本: 0.9.5
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -264,6 +266,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  # 升级管理接口组
   /api/update/analysis:
     get:
       summary: 升级分析
@@ -278,6 +281,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpgradeAnalysisResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/update/components:
+    post:
+      summary: 获取升级组件信息
+      description: 获取升级包中包含的组件信息及数量
+      operationId: getUpdateComponents
+      tags:
+        - 升级管理
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirPathRequest'
+      responses:
+        '200':
+          description: 升级组件信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentsInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -364,56 +392,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/setup/components:
-    post:
-      summary: 获取安装组件信息
-      description: 获取安装包中包含的组件信息及数量
-      operationId: getSetupComponents
-      tags:
-        - 安装管理
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DirPathRequest'
-      responses:
-        '200':
-          description: 安装组件信息
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ComponentsInfoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/update/components:
-    post:
-      summary: 获取升级组件信息
-      description: 获取升级包中包含的组件信息及数量
-      operationId: getUpdateComponents
-      tags:
-        - 升级管理
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DirPathRequest'
-      responses:
-        '200':
-          description: 升级组件信息
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ComponentsInfoResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
 components:
   schemas:
     UnzipRequest:
@@ -435,6 +413,15 @@ components:
           type: string
           description: 解压后的目录路径
           example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app"
+
+    SaveSettingsRequest:
+      type: object
+      required:
+        - settings
+      properties:
+        settings:
+          $ref: '#/components/schemas/Settings'
+          description: 配置项对象
 
     Settings:
       type: object

@@ -109,7 +109,7 @@ const mockDataStore = {
     POST: (params, body) => {
       console.log('Mock: 保存设置', params, body);
       // 记录保存的设置，以便在下次加载时显示
-      const savedSettings = body;
+      const savedSettings = body.settings || {};
       const dirPath = params.dir_path || 'default_path';
       
       // 在控制台中显示保存的设置

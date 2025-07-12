@@ -201,13 +201,13 @@ async function saveSettings() {
         : pathInput;
     
     try {
-        // 使用正确的API端点并直接发送settings对象（不需要嵌套）
+        // 使用正确的API端点并包装settings对象
         const response = await fetch(`/api/save_settings?dir_path=${encodeURIComponent(dirPath)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(settings)  // 直接发送settings对象，符合后端SaveSettingsRequest结构的flatten特性
+            body: JSON.stringify({ settings: settings })  // 将settings包装在settings字段中，符合后端SaveSettingsRequest结构
         });
         
         const text = await response.text();
@@ -427,13 +427,8 @@ async function loadUpgradePackage() {
             const upgradeSettingsEditor = document.getElementById('upgrade-settings-editor');
             upgradeSettingsEditor.innerHTML = '<div>正在加载本地设置...</div>';
             try {
-                const settingsResponse = await fetch('/api/find_setting_file', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ dir_path: dirPath })
-                });
+                // 将POST请求改为GET请求，使用查询参数
+                const settingsResponse = await fetch(`/api/find_setting_file?dir_path=${encodeURIComponent(dirPath)}`);
                 
                 if (settingsResponse.ok) {
                     const settingsData = await settingsResponse.json();
@@ -851,7 +846,7 @@ async function saveUpgradeSettings() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(settings)  // 直接发送settings对象，符合后端SaveSettingsRequest结构的flatten特性
+            body: JSON.stringify({ settings: settings })  // 将settings包装在settings字段中，符合后端SaveSettingsRequest结构
         });
         
         const text = await response.text();
