@@ -503,7 +503,7 @@ async function initUpgradeProcess() {
     
     // 加载当前系统信息
     try {
-        const response = await fetch('/api/upgrade/analysis');
+        const response = await fetch('/api/update/analysis');
         const data = await response.json();
         
         if (data.success) {
@@ -511,10 +511,10 @@ async function initUpgradeProcess() {
             document.getElementById('current-system-info').textContent = data.currentSystem || '无法获取当前系统信息';
             
             // 显示升级系统信息
-            document.getElementById('upgrade-system-info').textContent = data.upgradeSystem || '无法获取升级系统信息';
+            document.getElementById('upgrade-system-info').textContent = data.updateSystem || '无法获取升级系统信息';
             
             // 显示升级项
-            document.getElementById('upgrade-items').textContent = data.upgradeItems || '无升级项';
+            document.getElementById('upgrade-items').textContent = data.updateItems || '无升级项';
         } else {
             document.getElementById('current-system-info').textContent = '获取信息失败: ' + (data.error || '未知错误');
         }
@@ -577,7 +577,7 @@ async function performBackup() {
     backupProgress.textContent = '备份中...';
     
     try {
-        const response = await fetch('/api/upgrade/backup', {
+        const response = await fetch('/api/update/backup', {
             method: 'POST'
         });
         

@@ -261,21 +261,21 @@ const mockDataStore = {
   },
   
   // 升级分析API
-  '/api/upgrade/analysis': {
+  '/api/update/analysis': {
     GET: () => {
       return {
         json: {
           success: true,
           currentSystem: "当前系统版本: 1.0.0\n发布日期: 2023-01-15\n组件数量: 2",
-          upgradeSystem: "升级系统版本: 1.2.0\n发布日期: 2023-06-10\n组件数量: 3",
-          upgradeItems: "需要升级的组件:\n- 核心组件: 1.0.0 -> 1.1.0\n- 界面组件: 1.0.0 -> 1.2.0\n- 新增: 数据组件 0.9.5"
+          updateSystem: "升级系统版本: 1.2.0\n发布日期: 2023-06-10\n组件数量: 3",
+          updateItems: "需要升级的组件:\n- 核心组件: 1.0.0 -> 1.1.0\n- 界面组件: 1.0.0 -> 1.2.0\n- 新增: 数据组件 0.9.5"
         }
       };
     }
   },
   
   // 升级备份API
-  '/api/upgrade/backup': {
+  '/api/update/backup': {
     POST: () => {
       return {
         json: {
@@ -287,7 +287,7 @@ const mockDataStore = {
   },
   
   // 升级更新API
-  '/api/upgrade/update': {
+  '/api/update/update': {
     POST: () => {
       return {
         json: {
@@ -299,7 +299,7 @@ const mockDataStore = {
   },
   
   // 升级完成API
-  '/api/upgrade/complete': {
+  '/api/update/complete': {
     POST: () => {
       return {
         json: {
