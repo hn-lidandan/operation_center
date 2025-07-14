@@ -25,7 +25,7 @@ const mockDataStore = {
   },
   
   // 查找信息文件API
-  '/api/find_info_file': {
+  '/api/current_version': {
     GET: (params) => {
       console.log('Mock: 查找信息文件', params);
       return {
@@ -218,47 +218,7 @@ const mockDataStore = {
     }
   },
   
-  // 版本历史API
-  '/versions/history': {
-    GET: () => {
-      return {
-        json: {
-          success: true,
-          versions: [
-            {
-              name: "版本 1.0.0",
-              date: "2023-01-15",
-              description: "初始版本",
-              components: [
-                { name: "核心组件", version: "1.0.0" },
-                { name: "界面组件", version: "1.0.0" }
-              ]
-            },
-            {
-              name: "版本 1.1.0",
-              date: "2023-03-20",
-              description: "功能增强版本",
-              components: [
-                { name: "核心组件", version: "1.0.5" },
-                { name: "界面组件", version: "1.1.0" },
-                { name: "数据组件", version: "0.9.0" }
-              ]
-            },
-            {
-              name: "版本 1.2.0",
-              date: "2023-06-10",
-              description: "稳定性提升版本",
-              components: [
-                { name: "核心组件", version: "1.1.0" },
-                { name: "界面组件", version: "1.2.0" },
-                { name: "数据组件", version: "0.9.5" }
-              ]
-            }
-          ]
-        }
-      };
-    }
-  },
+
   
   // 升级分析API
   '/api/update/analysis': {
@@ -298,17 +258,7 @@ const mockDataStore = {
     }
   },
   
-  // 升级完成API
-  '/api/update/complete': {
-    POST: () => {
-      return {
-        json: {
-          success: true,
-          message: "系统升级已完成，当前版本 1.2.0"
-        }
-      };
-    }
-  }
+
 };
 
 // 辅助函数：从URL中提取查询参数

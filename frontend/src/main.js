@@ -105,9 +105,9 @@ async function handleProcess() {
             
             console.log('使用的目录路径:', dirPath);
             
-            // 2. 调用find_info_file API获取版本信息
+            // 2. 调用current_version API获取版本信息
             try {
-                const infoResponse = await fetch(`/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
+                const infoResponse = await fetch(`/api/current_version?dir_path=${encodeURIComponent(dirPath)}`);
                 if (infoResponse.ok) {
                     const versionInfo = await infoResponse.text();
                     // 确保版本信息正确显示在版本信息框中
@@ -381,7 +381,7 @@ async function loadUpgradePackage() {
             
             // 1. 加载当前系统版本信息
             try {
-                const infoResponse = await fetch(`/api/find_info_file?dir_path=${encodeURIComponent(dirPath)}`);
+                const infoResponse = await fetch(`/api/current_version?dir_path=${encodeURIComponent(dirPath)}`);
                 if (infoResponse.ok) {
                     const versionInfo = await infoResponse.text();
                     document.getElementById('current-version').innerHTML = 
@@ -679,10 +679,10 @@ async function performUpdate() {
             }
             
             // 检查是否更新完成
-            if (text.includes('更新组件完成') || text.includes('验证通过')) {
+                if (text.includes('更新组件完成') || text.includes('验证通过')) {
                 progressBar.style.width = '100%';
                 progressBar.textContent = '100%';
-                progressText.textContent = '更新完成!';
+                    progressText.textContent = '更新完成!';
             }
         }
         
@@ -720,80 +720,7 @@ async function performUpdate() {
     }
 }
 
-// 加载历史版本信息
-async function loadHistoryVersions() {
-    const historyVersionsElement = document.getElementById('history-versions');
-    historyVersionsElement.innerHTML = '加载历史版本中...';
-    
-    try {
-        const response = await fetch('/versions/history');
-        const data = await response.json();
-        
-        if (data.success && data.versions && data.versions.length > 0) {
-            // 清空容器
-            historyVersionsElement.innerHTML = '';
-            
-            // 创建版本列表
-            const versionList = document.createElement('ul');
-            versionList.style.listStyleType = 'none';
-            versionList.style.padding = '0';
-            versionList.style.margin = '0';
-            
-            // 添加每个版本
-            data.versions.forEach(version => {
-                const versionItem = document.createElement('li');
-                versionItem.style.padding = '8px 0';
-                versionItem.style.borderBottom = '1px solid #eee';
-                versionItem.style.cursor = 'pointer';
-                versionItem.textContent = version.name || '未命名版本';
-                
-                // 添加点击事件以显示版本详情
-                versionItem.addEventListener('click', () => {
-                    showVersionDetails(version);
-                });
-                
-                versionList.appendChild(versionItem);
-            });
-            
-            historyVersionsElement.appendChild(versionList);
-        } else {
-            historyVersionsElement.textContent = '没有可用的历史版本';
-        }
-    } catch (error) {
-        historyVersionsElement.textContent = '加载历史版本失败: ' + error.message;
-    }
-}
 
-// 显示版本详情
-function showVersionDetails(version) {
-    // 在当前系统版本区域显示选中的历史版本详情
-    const currentVersionElement = document.getElementById('current-version');
-    
-    // 创建版本详情内容
-    let detailsContent = '';
-    
-    if (version.name) {
-        detailsContent += `<div><strong>版本名称:</strong> ${version.name}</div>`;
-    }
-    
-    if (version.date) {
-        detailsContent += `<div><strong>发布日期:</strong> ${version.date}</div>`;
-    }
-    
-    if (version.description) {
-        detailsContent += `<div><strong>描述:</strong> ${version.description}</div>`;
-    }
-    
-    if (version.components && version.components.length > 0) {
-        detailsContent += `<div><strong>组件:</strong></div><ul>`;
-        version.components.forEach(component => {
-            detailsContent += `<li>${component.name || '未命名组件'}: ${component.version || '无版本信息'}</li>`;
-        });
-        detailsContent += `</ul>`;
-    }
-    
-    currentVersionElement.innerHTML = detailsContent || '无详细信息';
-}
 
 // 加载升级设置
 function loadUpgradeSettings(settings) {
@@ -872,5 +799,4 @@ window.startInstall = startInstall;
 window.loadUpgradePackage = loadUpgradePackage;
 window.startUpgrade = startUpgrade;
 window.nextUpgradeStep = nextUpgradeStep;
-window.loadHistoryVersions = loadHistoryVersions; // 导出历史版本加载函数
 window.saveUpgradeSettings = saveUpgradeSettings; // 导出保存升级设置函数
