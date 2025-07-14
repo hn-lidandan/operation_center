@@ -208,10 +208,10 @@ const mockDataStore = {
         json: {
           success: true,
           totalComponents: 3,
-          components: [
-            { name: "核心组件", version: "1.1.0" },
-            { name: "界面组件", version: "1.2.0" },
-            { name: "数据组件", version: "0.9.5" }
+              components: [
+                { name: "核心组件", version: "1.1.0" },
+                { name: "界面组件", version: "1.2.0" },
+                { name: "数据组件", version: "0.9.5" }
           ]
         }
       };

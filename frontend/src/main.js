@@ -13,14 +13,83 @@ const api = axios.create({
 
 // 全局变量存储当前活动的标签页
 window.currentTab = 'init';
+// 全局变量存储当前顶部选项卡
+window.currentTopTab = 'setup';
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
     console.log('页面已加载');
+    // 初始化顶部选项卡状态
+    updateSidebarMenuByTopTab('setup');
 });
+
+// 切换顶部选项卡
+function switchTopTab(tabId) {
+    console.log('切换顶部选项卡到:', tabId);
+    
+    // 移除所有顶部选项卡的活动状态
+    document.querySelectorAll('.top-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 设置当前选中的顶部选项卡为活动状态
+    document.getElementById('tab-' + tabId).classList.add('active');
+    
+    // 保存当前顶部选项卡
+    window.currentTopTab = tabId;
+    
+    // 根据顶部选项卡更新侧边栏菜单
+    updateSidebarMenuByTopTab(tabId);
+    
+    // 如果当前侧边栏菜单项在新的顶部选项卡下不可见，则选择第一个可见的菜单项
+    const activeMenuItem = document.querySelector('.sidebar-menu li.active');
+    if (!activeMenuItem || activeMenuItem.style.display === 'none') {
+        const firstVisibleMenuItem = document.querySelector('.sidebar-menu li:not([style*="display: none"])');
+        if (firstVisibleMenuItem) {
+            switchTab(firstVisibleMenuItem.id.replace('menu-', ''));
+        }
+    }
+}
+
+// 根据顶部选项卡更新侧边栏菜单显示
+function updateSidebarMenuByTopTab(topTabId) {
+    const menuItems = document.querySelectorAll('.sidebar-menu li');
+    
+    if (topTabId === 'setup') {
+        // 显示"配置初始化"和"执行安装"，隐藏"升级准备"和"升级"
+        menuItems.forEach(item => {
+            if (item.id === 'menu-init' || item.id === 'menu-execute') {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // 如果当前标签页是升级相关的，则切换到配置初始化
+        if (window.currentTab === 'upgrade-prepare' || window.currentTab === 'upgrade') {
+            switchTab('init');
+        }
+    } else if (topTabId === 'update') {
+        // 显示"升级准备"和"升级"，隐藏"配置初始化"和"执行安装"
+        menuItems.forEach(item => {
+            if (item.id === 'menu-upgrade-prepare' || item.id === 'menu-upgrade') {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // 如果当前标签页是配置相关的，则切换到升级准备
+        if (window.currentTab === 'init' || window.currentTab === 'execute') {
+            switchTab('upgrade-prepare');
+        }
+    }
+}
 
 // 切换标签页
 function switchTab(tabId) {
+    console.log('切换标签页到:', tabId);
+    
     // 移除所有菜单项的活动状态
     document.querySelectorAll('.sidebar-menu li').forEach(item => {
         item.classList.remove('active');
@@ -38,9 +107,17 @@ function switchTab(tabId) {
         document.querySelector('.main-content').style.display = 'flex';
         document.querySelector('.settings-content').style.display = 'flex';
         document.getElementById('menu-init').classList.add('active');
+        // 确保顶部选项卡为"Setup"
+        if (window.currentTopTab !== 'setup') {
+            switchTopTab('setup');
+        }
     } else if (tabId === 'execute') {
         document.querySelector('.execute-content').style.display = 'flex';
         document.getElementById('menu-execute').classList.add('active');
+        // 确保顶部选项卡为"Setup"
+        if (window.currentTopTab !== 'setup') {
+            switchTopTab('setup');
+        }
         
         // 确保执行安装界面的元素正确初始化
         const executeContainer = document.querySelector('.execute-container');
@@ -63,9 +140,17 @@ function switchTab(tabId) {
     } else if (tabId === 'upgrade-prepare') {
         document.querySelector('.upgrade-prepare-content').style.display = 'flex';
         document.getElementById('menu-upgrade-prepare').classList.add('active');
+        // 确保顶部选项卡为"Update"
+        if (window.currentTopTab !== 'update') {
+            switchTopTab('update');
+        }
     } else if (tabId === 'upgrade') {
         document.querySelector('.upgrade-content').style.display = 'flex';
         document.getElementById('menu-upgrade').classList.add('active');
+        // 确保顶部选项卡为"Update"
+        if (window.currentTopTab !== 'update') {
+            switchTopTab('update');
+        }
     }
     
     // 保存当前标签页
@@ -800,3 +885,4 @@ window.loadUpgradePackage = loadUpgradePackage;
 window.startUpgrade = startUpgrade;
 window.nextUpgradeStep = nextUpgradeStep;
 window.saveUpgradeSettings = saveUpgradeSettings; // 导出保存升级设置函数
+window.switchTopTab = switchTopTab; // 导出顶部选项卡切换函数

@@ -13,24 +13,66 @@
         }
         .app-container {
             display: flex;
+            flex-direction: column;
             height: 100%;
             width: 100%;
         }
+        /* 顶部标题样式 */
+        .app-header {
+            background-color: #f0f0f0;
+            padding: 15px 0;
+            text-align: left; /* 从居中改为左对齐 */
+            border-bottom: 1px solid #ddd;
+        }
+        .app-title {
+            font-size: 32px;
+            margin: 0;
+            color: #333;
+            font-weight: bold;
+            padding-left: 30px; /* 添加左侧内边距，使标题不贴边 */
+        }
+        /* 顶部选项卡样式 */
+        .top-tabs {
+            display: flex;
+            border-bottom: 2px solid #333;
+            background-color: #f5f5f5;
+        }
+        .top-tab {
+            padding: 15px 40px;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 2px;
+            background-color: #f5f5f5;
+        }
+        .top-tab.active {
+            background-color: white;
+            border-bottom: 2px solid white;
+            margin-bottom: -2px;
+            color: #333;
+        }
+        
+        /* 主内容区域布局 */
+        .main-area {
+            display: flex;
+            flex: 1;
+            height: calc(100% - 110px); /* 减去顶部标题和选项卡的高度 */
+        }
+        
         .sidebar {
             width: 16.66%; /* 占整个界面的六分之一宽度 */
             background-color: #f5f5f5;
             border-right: 1px solid #ddd;
             padding: 0; /* 移除内边距 */
-            position: relative;
         }
         /* 修改菜单样式，使其作为多边形镶嵌在界面上 */
         .sidebar-menu {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            position: absolute;
-            left: 0;
-            top: 80px; /* 位于页面上方 */
             width: 100%;
         }
         .sidebar-menu li {
@@ -60,11 +102,6 @@
             flex-direction: column;
             box-sizing: border-box;
             overflow-y: auto;
-        }
-        h1 {
-            font-size: 32px;
-            margin-bottom: 40px; /* 增加底部间距，原来是20px */
-            color: #333;
         }
         .main-content {
             display: flex;
@@ -467,129 +504,155 @@
 </head>
 <body>
     <div class="app-container">
-        <div class="sidebar">
-            <!-- 菜单作为多边形镶嵌在界面上 -->
-            <ul class="sidebar-menu">
-                <li id="menu-init" class="active" onclick="switchTab('init')">配置初始化</li>
-                <li id="menu-execute" onclick="switchTab('execute')">执行安装</li>
-                <li id="menu-upgrade-prepare" onclick="switchTab('upgrade-prepare')">升级准备</li>
-                <li id="menu-upgrade" onclick="switchTab('upgrade')">升级</li>
-            </ul>
-        </div>
-        <div class="container">
-            <h1>Operation Center</h1>
-        <div class="main-content">
-            <div class="form-group">
-                <label class="label">安装包：</label>
-                <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
-                <button onclick="handleProcess()" class="btn">载入</button>
-            </div>
-            <div id="loading" class="loading">处理中...</div>
-            <div class="result-container">
-                <label class="label">版本信息：</label>
-                <div class="settings-container">
-                <div id="result" class="result"></div>
-                </div>
-            </div>
+        <!-- 顶部标题 -->
+        <div class="app-header">
+            <h1 class="app-title">Operation Center</h1>
         </div>
         
-        <div class="settings-content">
-            <div class="form-group">
-                <label class="label wide-label">配置本地化信息：</label>
+        <!-- 顶部选项卡 -->
+        <div class="top-tabs">
+            <div id="tab-setup" class="top-tab active" onclick="switchTopTab('setup')">Setup</div>
+            <div id="tab-update" class="top-tab" onclick="switchTopTab('update')">Update</div>
+        </div>
+        
+        <div class="main-area">
+            <div class="sidebar">
+                <!-- 菜单作为多边形镶嵌在界面上 -->
+                <ul class="sidebar-menu" id="sidebar-menu">
+                    <li id="menu-init" class="active" onclick="switchTab('init')">配置初始化</li>
+                    <li id="menu-execute" onclick="switchTab('execute')">执行安装</li>
+                    <li id="menu-upgrade-prepare" style="display: none;" onclick="switchTab('upgrade-prepare')">升级准备</li>
+                    <li id="menu-upgrade" style="display: none;" onclick="switchTab('upgrade')">升级</li>
+                </ul>
             </div>
-            <div class="settings-container">
-                <div id="settings-editor" class="settings-editor">
-                    <!-- 设置项将在这里动态生成 -->
-                </div>
-            </div>
-                <div class="buttons-container">
-                    <button onclick="saveSettings()" class="btn">保存配置</button>
-                    <button onclick="startInstall()" class="btn">安装</button>
-                </div>
-            </div>
-            
-            <!-- 执行安装的内容区域 -->
-            <div class="execute-content">
-                <div class="execute-container">
-                    <!-- 安装输出区域 - 初始内容会在JavaScript中设置 -->
-                </div>
-                <!-- 将进度条移到execute-container外部但仍在execute-content内部 -->
-                <div class="install-progress-container">
-                    <div class="install-progress-bar">0%</div>
-                </div>
-                <div class="install-progress-text"></div>
-            </div>
-
-            <!-- 升级准备的内容区域 - 按照草图修改 -->
-            <div class="upgrade-prepare-content">
-                <!-- 安装包地址和按钮区域 - 移到顶部 -->
-                <div class="upgrade-form-group">
-                    <label class="label">安装包地址：</label>
-                    <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
-                    <div class="buttons-inline">
-                        <button onclick="loadUpgradePackage()" class="btn">载入</button>
-                        <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
-                        <button onclick="startUpgrade()" class="btn">启动升级</button>
+            <div class="container">
+                <div class="main-content">
+                    <div class="form-group">
+                        <label class="label">安装包：</label>
+                        <input type="text" id="pathInput" class="path-input" placeholder="请输入安装包路径，例如: /path/to/file.zip">
+                        <button onclick="handleProcess()" class="btn">载入</button>
+                    </div>
+                    <div id="loading" class="loading">处理中...</div>
+                    <div class="result-container">
+                        <label class="label">版本信息：</label>
+                        <div class="settings-container">
+                            <div id="result" class="result"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- 添加间距 -->
-                <div style="margin-top: 40px;"></div>
+                <div class="settings-content">
+                    <div class="form-group">
+                        <label class="label wide-label">配置本地化信息：</label>
+                    </div>
+                    <div class="settings-container">
+                        <div id="settings-editor" class="settings-editor">
+                            <!-- 设置项将在这里动态生成 -->
+                        </div>
+                    </div>
+                    <div class="buttons-container">
+                        <button onclick="saveSettings()" class="btn">保存配置</button>
+                        <button onclick="startInstall()" class="btn">安装</button>
+                    </div>
+                </div>
                 
-                <!-- 历史版本和主内容区域容器 - 移到下方 -->
-                <div class="history-version-container">
-                    <!-- 历史版本 -->
-                    <div class="history-version-section">
-                        <div class="section-label">历史版本：</div>
-                        <div class="history-version-box">
-                            <div id="history-versions">
-                                <!-- 历史版本信息将在这里显示 -->
+                <!-- 执行安装的内容区域 -->
+                <div class="execute-content">
+                    <div class="execute-container">
+                        <!-- 安装输出区域 - 初始内容会在JavaScript中设置 -->
+                    </div>
+                    <!-- 将进度条移到execute-container外部但仍在execute-content内部 -->
+                    <div class="install-progress-container">
+                        <div class="install-progress-bar">0%</div>
+                    </div>
+                    <div class="install-progress-text"></div>
+                </div>
+
+                <!-- 升级准备的内容区域 - 按照草图修改 -->
+                <div class="upgrade-prepare-content">
+                    <!-- 安装包地址和按钮区域 - 移到顶部 -->
+                    <div class="upgrade-form-group">
+                        <label class="label">安装包地址：</label>
+                        <input type="text" id="upgradePathInput" class="upgrade-path-input" placeholder="请输入升级包路径">
+                        <div class="buttons-inline">
+                            <button onclick="loadUpgradePackage()" class="btn">载入</button>
+                            <button onclick="saveUpgradeSettings()" class="btn">保存配置</button>
+                            <button onclick="startUpgrade()" class="btn">启动升级</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 添加间距 -->
+                    <div style="margin-top: 40px;"></div>
+                    
+                    <!-- 历史版本和主内容区域容器 - 移到下方 -->
+                    <div class="history-version-container">
+                        <!-- 历史版本 -->
+                        <div class="history-version-section">
+                            <div class="section-label">历史版本：</div>
+                            <div class="history-version-box">
+                                <div id="history-versions">
+                                    <!-- 历史版本信息将在这里显示 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 主要内容区域 -->
+                        <div class="main-version-content">
+                            <!-- 当前系统版本 -->
+                            <div class="section-label">当前系统版本：</div>
+                            <div class="info-box" id="current-version">
+                                <!-- 系统版本信息将在这里显示 -->
+                            </div>
+                            
+                            <!-- 本地设置 - 增加高度 -->
+                            <div class="section-label">本地设置：</div>
+                            <div class="local-settings-box">
+                                <div id="upgrade-settings-editor">
+                                    <!-- 设置项将在这里动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 升级流程的内容区域 - 根据草图实现 -->
+                <div class="upgrade-content">
+                    <!-- 升级分析步骤内容 -->
+                    <div class="upgrade-step-content active" id="content-analysis">
+                        <div class="analysis-content">
+                            <div class="system-info-section">
+                                <div class="section-label">当前系统：</div>
+                                <div class="system-info-box" id="current-system-info">
+                                    <!-- 当前系统信息将在这里显示 -->
+                                </div>
+                            </div>
+                            
+                            <div class="system-info-section">
+                                <div class="section-label">升级系统：</div>
+                                <div class="system-info-box" id="upgrade-system-info">
+                                    <!-- 升级系统信息将在这里显示 -->
+                                </div>
+                            </div>
+                            
+                            <div class="system-info-section">
+                                <div class="section-label">升级项：</div>
+                                <div class="system-info-box" id="upgrade-items">
+                                    <!-- 升级项信息将在这里显示 -->
+                                </div>
+                            </div>
+                            
+                            <div class="next-step-container">
+                                <button class="btn" onclick="nextUpgradeStep()">下一步</button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 主要内容区域 -->
-                    <div class="main-version-content">
-                        <!-- 当前系统版本 -->
-                        <div class="section-label">当前系统版本：</div>
-                        <div class="info-box" id="current-version">
-                            <!-- 系统版本信息将在这里显示 -->
-                        </div>
-                        
-                        <!-- 本地设置 - 增加高度 -->
-                        <div class="section-label">本地设置：</div>
-                        <div class="local-settings-box">
-                            <div id="upgrade-settings-editor">
-                                <!-- 设置项将在这里动态生成 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 升级流程的内容区域 - 根据草图实现 -->
-            <div class="upgrade-content">
-                <!-- 升级分析步骤内容 -->
-                <div class="upgrade-step-content active" id="content-analysis">
-                    <div class="analysis-content">
+                    <!-- 升级备份步骤内容 -->
+                    <div class="upgrade-step-content" id="content-backup">
                         <div class="system-info-section">
-                            <div class="section-label">当前系统：</div>
-                            <div class="system-info-box" id="current-system-info">
-                                <!-- 当前系统信息将在这里显示 -->
-                            </div>
-                        </div>
-                        
-                        <div class="system-info-section">
-                            <div class="section-label">升级系统：</div>
-                            <div class="system-info-box" id="upgrade-system-info">
-                                <!-- 升级系统信息将在这里显示 -->
-                            </div>
-                        </div>
-                        
-                        <div class="system-info-section">
-                            <div class="section-label">升级项：</div>
-                            <div class="system-info-box" id="upgrade-items">
-                                <!-- 升级项信息将在这里显示 -->
+                            <div class="section-label">备份进度：</div>
+                            <div class="system-info-box" id="backup-progress">
+                                <!-- 备份进度信息将在这里显示 -->
                             </div>
                         </div>
                         
@@ -597,46 +660,32 @@
                             <button class="btn" onclick="nextUpgradeStep()">下一步</button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 升级备份步骤内容 -->
-                <div class="upgrade-step-content" id="content-backup">
-                    <div class="system-info-section">
-                        <div class="section-label">备份进度：</div>
-                        <div class="system-info-box" id="backup-progress">
-                            <!-- 备份进度信息将在这里显示 -->
+                    
+                    <!-- 更新组件步骤内容 -->
+                    <div class="upgrade-step-content" id="content-update">
+                        <div class="system-info-section">
+                            <div class="section-label">更新进度：</div>
+                            <div class="system-info-box" id="update-progress" style="font-family: monospace; white-space: pre-wrap; background-color: #f8f8f8; height: 600px; overflow-y: auto; line-height: 1.5;">
+                                <!-- 更新进度信息将在这里显示 -->
+                            </div>
                         </div>
+                        
+                        <!-- 添加进度条，与执行安装的进度条样式一致 -->
+                        <div class="install-progress-container" style="width: 75%; margin-left: auto; margin-right: auto;">
+                            <div class="install-progress-bar" id="update-progress-bar">0%</div>
+                        </div>
+                        <div class="install-progress-text" id="update-progress-text" style="width: 75%; margin-left: auto; margin-right: auto;"></div>
                     </div>
                     
-                    <div class="next-step-container">
-                        <button class="btn" onclick="nextUpgradeStep()">下一步</button>
+                    <!-- 升级进度指示器 - 移至底部并改为椭圆形 -->
+                    <div class="upgrade-progress">
+                        <div class="upgrade-step active" id="step-analysis">升级分析</div>
+                        <div class="upgrade-step" id="step-backup">升级备份</div>
+                        <div class="upgrade-step" id="step-update">更新组件</div>
+                        <div class="upgrade-step" id="step-finish">结束</div>
                     </div>
                 </div>
-                
-                <!-- 更新组件步骤内容 -->
-                <div class="upgrade-step-content" id="content-update">
-                    <div class="system-info-section">
-                        <div class="section-label">更新进度：</div>
-                        <div class="system-info-box" id="update-progress" style="font-family: monospace; white-space: pre-wrap; background-color: #f8f8f8; height: 600px; overflow-y: auto; line-height: 1.5;">
-                            <!-- 更新进度信息将在这里显示 -->
-                        </div>
-                    </div>
-                    
-                    <!-- 添加进度条，与执行安装的进度条样式一致 -->
-                    <div class="install-progress-container" style="width: 75%; margin-left: auto; margin-right: auto;">
-                        <div class="install-progress-bar" id="update-progress-bar">0%</div>
-                    </div>
-                    <div class="install-progress-text" id="update-progress-text" style="width: 75%; margin-left: auto; margin-right: auto;"></div>
-                </div>
-                
-                <!-- 升级进度指示器 - 移至底部并改为椭圆形 -->
-                <div class="upgrade-progress">
-                    <div class="upgrade-step active" id="step-analysis">升级分析</div>
-                    <div class="upgrade-step" id="step-backup">升级备份</div>
-                    <div class="upgrade-step" id="step-update">更新组件</div>
-                    <div class="upgrade-step" id="step-finish">结束</div>
-                </div>
-        </div>
+            </div>
         </div>
     </div>
     <script type="module" src="/src/main.js"></script>
