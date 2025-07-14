@@ -173,7 +173,7 @@ paths:
           $ref: '#/components/responses/ServerError'
 
   # 信息查询接口组
-  /api/find_info_file:
+  /api/current_version:
     get:
       summary: 获取版本信息
       description: 获取指定目录中的版本信息文件内容
@@ -249,22 +249,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /versions/history:
-    get:
-      summary: 获取版本历史详情
-      description: 获取系统的版本历史详细信息
-      operationId: getVersionsHistory
-      tags:
-        - 信息查询
-      responses:
-        '200':
-          description: 成功获取版本历史详情
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VersionHistoryResponse'
-        '500':
-          $ref: '#/components/responses/ServerError'
+
 
   # 升级管理接口组
   /api/update/analysis:
@@ -375,22 +360,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/update/complete:
-    post:
-      summary: 升级完成
-      description: 标记升级流程完成
-      operationId: completeUpgrade
-      tags:
-        - 升级管理
-      responses:
-        '200':
-          description: 升级完成
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpgradeCompleteResponse'
-        '500':
-          $ref: '#/components/responses/ServerError'
+
 
 components:
   schemas:
@@ -483,39 +453,9 @@ components:
           description: 组件版本
           example: "1.0.0"
 
-    VersionInfo:
-      type: object
-      properties:
-        name:
-          type: string
-          description: 版本名称
-          example: "版本 1.0.0"
-        date:
-          type: string
-          description: 发布日期
-          example: "2023-01-15"
-        description:
-          type: string
-          description: 版本描述
-          example: "初始版本"
-        components:
-          type: array
-          description: 组件列表
-          items:
-            $ref: '#/components/schemas/VersionComponent'
 
-    VersionHistoryResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: 是否成功
-          example: true
-        versions:
-          type: array
-          description: 版本历史列表
-          items:
-            $ref: '#/components/schemas/VersionInfo'
+
+
 
     UpgradeAnalysisResponse:
       type: object
@@ -549,17 +489,7 @@ components:
           description: 备份信息
           example: "系统已成功备份至 /backups/system-20230710-120000.bak"
 
-    UpgradeCompleteResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          description: 是否成功
-          example: true
-        message:
-          type: string
-          description: 完成信息
-          example: "系统升级已完成，当前版本 1.2.0"
+
 
     ErrorResponse:
       type: object
