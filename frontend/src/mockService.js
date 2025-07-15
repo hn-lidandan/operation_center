@@ -44,7 +44,7 @@ const mockDataStore = {
   },
   
   // 查找设置文件API - GET方式
-  '/api/find_setting_file': {
+  '/api/find_settings': {
     GET: (params) => {
       console.log('Mock: 查找设置文件(GET)', params);
       return {

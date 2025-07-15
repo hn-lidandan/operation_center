@@ -137,7 +137,7 @@ function switchTab(tabId) {
                     : pathInput;
                 
                 // 尝试获取配置信息
-                fetch(`/api/find_setting_file?dir_path=${encodeURIComponent(dirPath)}`)
+                fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`)
                     .then(response => response.json())
                     .then(data => {
                         loadSettings(data);
@@ -262,10 +262,10 @@ async function handleProcess() {
                 console.error('获取版本信息异常:', error);
             }
             
-            // 3. 调用find_setting_file API获取配置信息
+            // 3. 调用find_settings API获取配置信息
             try {
                 // 注意这里的路由，根据后端定义修正
-                const settingsResponse = await fetch(`/api/find_setting_file?dir_path=${encodeURIComponent(dirPath)}`);
+                const settingsResponse = await fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`);
                 if (settingsResponse.ok) {
                     const settingsData = await settingsResponse.json();
                     loadSettings(settingsData);
@@ -591,7 +591,7 @@ async function loadUpgradePackage() {
             upgradeSettingsEditor.innerHTML = '<div>正在加载本地设置...</div>';
             try {
                 // 将POST请求改为GET请求，使用查询参数
-                const settingsResponse = await fetch(`/api/find_setting_file?dir_path=${encodeURIComponent(dirPath)}`);
+                const settingsResponse = await fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`);
                 
                 if (settingsResponse.ok) {
                     const settingsData = await settingsResponse.json();

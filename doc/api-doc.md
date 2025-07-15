@@ -98,7 +98,7 @@
 #### 3. 获取配置信息
 
 **请求**
-- **路径**: `/api/find_setting_file`
+- **路径**: `/api/find_settings`
 - **方法**: `GET`
 - **查询参数**: `dir_path=解压后的目录路径`
 

@@ -111,7 +111,7 @@ paths:
           $ref: '#/components/responses/ServerError'
 
   # 配置管理接口组
-  /api/find_setting_file:
+  /api/find_settings:
     get:
       summary: 获取配置信息
       description: 通过GET方式获取指定目录中的配置文件内容
