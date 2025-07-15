@@ -17,6 +17,8 @@ window.currentTab = 'init';
 window.currentTopTab = 'setup';
 // 全局变量标记安装包是否已成功载入
 window.packageLoaded = false;
+// 全局变量标记配置是否已成功保存
+window.configSaved = false;
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
@@ -121,6 +123,9 @@ function switchTab(tabId) {
             switchTopTab('setup');
         }
         
+        // 重置配置保存状态
+        window.configSaved = false;
+        
         // 如果配置编辑器为空，尝试加载配置
         const configEditor = document.getElementById('settings-editor');
         if (configEditor && configEditor.children.length === 0) {
@@ -204,6 +209,9 @@ async function handleProcess() {
     
     // 重置安装包载入状态
     window.packageLoaded = false;
+    
+    // 重置配置保存状态
+    window.configSaved = false;
     
     try {
         // 1. 调用解压API
@@ -358,18 +366,30 @@ async function saveSettings() {
         if (response.ok) {
             alert('设置已保存');
             console.log('保存配置成功:', text);
+            // 标记配置已成功保存
+            window.configSaved = true;
         } else {
             alert('保存失败: ' + text);
             console.error('保存配置失败:', text);
+            // 保存失败，标记配置未保存
+            window.configSaved = false;
         }
     } catch (error) {
         alert('请求错误: ' + error.message);
         console.error('保存配置异常:', error);
+        // 发生异常，标记配置未保存
+        window.configSaved = false;
     }
 }
 
 // 开始安装
 async function startInstall() {
+    // 检查配置是否已保存
+    if (!window.configSaved) {
+        alert('请对当前配置保存');
+        return;
+    }
+    
     // 获取DOM元素
     const executeContainer = document.querySelector('.execute-container');
     const progressBar = document.querySelector('.install-progress-bar');
