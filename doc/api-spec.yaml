@@ -49,7 +49,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DirPathRequest'
+              $ref: '#/components/schemas/SetupComponentsRequest'
       responses:
         '200':
           description: 安装组件信息
@@ -74,7 +74,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DirPathRequest'
+              $ref: '#/components/schemas/SetupRequest'
       responses:
         '200':
           description: 安装进度流
@@ -86,13 +86,15 @@ paths:
                 description: |
                   安装进度信息的流式响应。响应应包含以下格式的文本：
                   1. 开始时显示"开始安装..."
-                  2. 每个组件应标记为：`组件: 组件名称 版本号`
-                  3. 组件安装过程中的子任务以"- "开头
-                  4. 最后应包含完成标记：`安装完成!`
+                  2. 显示使用的配置文件: `使用配置文件: 文件名`
+                  3. 每个组件应标记为：`组件: 组件名称 版本号`
+                  4. 组件安装过程中的子任务以"- "开头
+                  5. 最后应包含完成标记：`安装完成!`
                   
                   示例：
                   ```
                   开始安装...
+                  使用配置文件: value.yml
                   组件: 核心组件 1.0.0
                   - 复制文件...
                   - 配置组件...
@@ -139,6 +141,34 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/find_settings:
+    get:
+      summary: 获取多个配置文件信息
+      description: 获取指定目录中所有配置文件的内容
+      operationId: getMultiSettings
+      tags:
+        - 配置管理
+      parameters:
+        - name: dir_path
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 解压后的目录路径
+      responses:
+        '200':
+          description: 成功获取多个配置文件信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiSettings'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/save_setting:
     post:
       summary: 保存配置
@@ -166,7 +196,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "配置保存成功"
+                example: "配置保存成功到文件 value.yml"
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -384,11 +414,41 @@ components:
           description: 解压后的目录路径
           example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app"
 
-    SaveSettingsRequest:
+    SetupComponentsRequest:
       type: object
       required:
-        - settings
+        - dir_path
       properties:
+        dir_path:
+          type: string
+          description: 解压后的目录路径
+          example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app"
+        config_file:
+          type: string
+          description: 要使用的配置文件名称
+          example: "value.yml"
+
+    SetupRequest:
+      type: object
+      required:
+        - dir_path
+      properties:
+        dir_path:
+          type: string
+          description: 解压后的目录路径
+          example: "/Users/ldd/Workspaces/zip/dss-gateway-mac-app"
+        config_file:
+          type: string
+          description: 要使用的配置文件名称
+          example: "value.yml"
+
+    SaveSettingsRequest:
+      type: object
+      properties:
+        file_name:
+          type: string
+          description: 要保存的配置文件名称
+          example: "value.yml"
         settings:
           $ref: '#/components/schemas/Settings'
           description: 配置项对象
@@ -440,6 +500,24 @@ components:
       additionalProperties:
         type: string
         description: 其他配置项
+
+    MultiSettings:
+      type: object
+      description: 多个配置文件的内容
+      additionalProperties:
+        $ref: '#/components/schemas/Settings'
+      example:
+        "value.yml":
+          host: "localhost"
+          port: "8080"
+          username: "admin"
+          password: "******"
+          db_name: "operation_center"
+        "advanced.yml":
+          log_level: "info"
+          auto_start: "true"
+          backup_enabled: "true"
+          max_log_size: "100MB"
 
     VersionComponent:
       type: object
