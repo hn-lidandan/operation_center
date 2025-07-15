@@ -63,6 +63,7 @@ async fn cmd_unzip(req: web::Json<UnzipRequest>) -> impl Responder {
 #[derive(Deserialize)]
 pub struct FilePathRequest {
     dir_path: String, // 要搜索的目录路径
+    setting_file: Option<String>,
 }
 
 #[post("/setup")]

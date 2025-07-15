@@ -136,11 +136,11 @@ function switchTab(tabId) {
                     ? pathInput.substring(0, pathInput.length - 4)
                     : pathInput;
                 
-                // 尝试获取配置信息
-                fetch(`/api/find_setting?dir_path=${encodeURIComponent(dirPath)}`)
+                // 尝试获取配置信息 - 从find_setting改为find_settings
+                fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`)
                     .then(response => response.json())
                     .then(data => {
-                        loadSettings(data);
+                        loadMultiSettings(data);
                     })
                     .catch(error => {
                         console.error('获取配置信息失败:', error);
@@ -262,13 +262,13 @@ async function handleProcess() {
                 console.error('获取版本信息异常:', error);
             }
             
-            // 3. 调用find_setting API获取配置信息
+            // 3. 调用find_settings API获取配置信息
             try {
-                // 注意这里的路由，根据后端定义修正
-                const settingsResponse = await fetch(`/api/find_setting?dir_path=${encodeURIComponent(dirPath)}`);
+                // 从find_setting改为find_settings
+                const settingsResponse = await fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`);
                 if (settingsResponse.ok) {
                     const settingsData = await settingsResponse.json();
-                    loadSettings(settingsData);
+                    loadMultiSettings(settingsData);
                 } else {
                     const errorText = await settingsResponse.text();
                     console.error(`获取配置信息失败: ${errorText}`);
@@ -285,6 +285,172 @@ async function handleProcess() {
     } finally {
         document.getElementById('loading').style.display = 'none';
     }
+}
+
+// 加载多个配置文件设置
+function loadMultiSettings(allSettings) {
+    const settingsEditor = document.getElementById('settings-editor');
+    settingsEditor.innerHTML = '';
+    
+    if (!allSettings || Object.keys(allSettings).length === 0) {
+        settingsEditor.textContent = '无可用设置';
+        return;
+    }
+    
+    // 存储所有配置文件名
+    const fileNames = Object.keys(allSettings);
+    
+    // 如果没有配置文件，显示提示信息
+    if (fileNames.length === 0) {
+        settingsEditor.textContent = '无可用设置';
+        return;
+    }
+    
+    // 填充配置文件选择下拉框
+    const configFileSelect = document.getElementById('configFileSelect');
+    if (configFileSelect) {
+        configFileSelect.innerHTML = '';
+        fileNames.forEach(fileName => {
+            const option = document.createElement('option');
+            option.value = fileName;
+            option.textContent = fileName;
+            configFileSelect.appendChild(option);
+        });
+    }
+    
+    // 存储当前显示的配置文件索引
+    window.currentFileIndex = window.currentFileIndex || 0;
+    
+    // 确保索引在有效范围内
+    if (window.currentFileIndex >= fileNames.length) {
+        window.currentFileIndex = 0;
+    }
+    
+    // 获取当前要显示的配置文件名
+    const currentFileName = fileNames[window.currentFileIndex];
+    const fileSettings = allSettings[currentFileName];
+    
+    // 创建一个容器来包含当前配置文件框
+    const allSettingsContainer = document.createElement('div');
+    allSettingsContainer.style.width = '100%';
+    allSettingsContainer.style.display = 'flex';
+    allSettingsContainer.style.flexDirection = 'column';
+    
+    // 创建配置文件框
+    const fileContainer = document.createElement('div');
+    fileContainer.style.width = '100%';
+    fileContainer.style.padding = '15px';
+    fileContainer.style.border = '1px solid #ccc';
+    fileContainer.style.borderRadius = '8px';
+    fileContainer.style.backgroundColor = '#f9f9f9';
+    
+    // 添加配置文件标题
+    const fileTitle = document.createElement('div');
+    fileTitle.style.fontWeight = 'bold';
+    fileTitle.style.fontSize = '18px';
+    fileTitle.style.marginBottom = '15px';
+    fileTitle.style.padding = '5px 10px';
+    fileTitle.style.backgroundColor = '#e0e0e0';
+    fileTitle.style.borderRadius = '4px';
+    fileTitle.textContent = `配置文件: ${currentFileName}`;
+    fileContainer.appendChild(fileTitle);
+    
+    // 创建配置项表格
+    const settingsTable = document.createElement('div');
+    settingsTable.style.width = '100%';
+    
+    // 遍历配置项
+    for (const key in fileSettings) {
+        const row = document.createElement('div');
+        row.className = 'settings-row';
+        row.style.display = 'flex';
+        row.style.marginBottom = '15px';
+        row.style.alignItems = 'center';
+        
+        const keyElement = document.createElement('div');
+        keyElement.style.width = '250px';
+        keyElement.style.fontWeight = 'bold';
+        keyElement.style.paddingRight = '15px';
+        keyElement.textContent = key;
+        
+        const valueElement = document.createElement('input');
+        valueElement.style.flexGrow = '1';
+        valueElement.style.padding = '8px';
+        valueElement.style.border = '1px solid #ccc';
+        valueElement.style.borderRadius = '4px';
+        valueElement.style.fontSize = '16px';
+        valueElement.value = fileSettings[key];
+        valueElement.dataset.key = key;
+        valueElement.dataset.file = currentFileName;
+        
+        row.appendChild(keyElement);
+        row.appendChild(valueElement);
+        settingsTable.appendChild(row);
+    }
+    
+    fileContainer.appendChild(settingsTable);
+    
+    // 添加保存按钮
+    const saveButtonContainer = document.createElement('div');
+    saveButtonContainer.style.display = 'flex';
+    saveButtonContainer.style.justifyContent = 'flex-end';
+    saveButtonContainer.style.marginTop = '15px';
+    
+    const saveButton = document.createElement('button');
+    saveButton.className = 'btn';
+    saveButton.textContent = '保存配置';
+    saveButton.dataset.file = currentFileName;
+    saveButton.onclick = () => saveSettings(currentFileName);
+    
+    saveButtonContainer.appendChild(saveButton);
+    fileContainer.appendChild(saveButtonContainer);
+    
+    allSettingsContainer.appendChild(fileContainer);
+    
+    // 如果有多个配置文件，添加分页导航按钮
+    if (fileNames.length > 1) {
+        const paginationContainer = document.createElement('div');
+        paginationContainer.style.display = 'flex';
+        paginationContainer.style.justifyContent = 'center';
+        paginationContainer.style.marginTop = '20px';
+        paginationContainer.style.gap = '10px';
+        
+        // 添加上一页按钮
+        const prevButton = document.createElement('button');
+        prevButton.className = 'btn';
+        prevButton.textContent = '上一页';
+        prevButton.onclick = () => {
+            window.currentFileIndex = (window.currentFileIndex - 1 + fileNames.length) % fileNames.length;
+            loadMultiSettings(allSettings);
+        };
+        
+        // 添加页码信息
+        const pageInfo = document.createElement('div');
+        pageInfo.style.display = 'flex';
+        pageInfo.style.alignItems = 'center';
+        pageInfo.style.marginLeft = '15px';
+        pageInfo.style.marginRight = '15px';
+        pageInfo.textContent = `${window.currentFileIndex + 1} / ${fileNames.length}`;
+        
+        // 添加下一页按钮
+        const nextButton = document.createElement('button');
+        nextButton.className = 'btn';
+        nextButton.textContent = '下一页';
+        nextButton.onclick = () => {
+            window.currentFileIndex = (window.currentFileIndex + 1) % fileNames.length;
+            loadMultiSettings(allSettings);
+        };
+        
+        paginationContainer.appendChild(prevButton);
+        paginationContainer.appendChild(pageInfo);
+        paginationContainer.appendChild(nextButton);
+        allSettingsContainer.appendChild(paginationContainer);
+    }
+    
+    settingsEditor.appendChild(allSettingsContainer);
+    
+    // 存储所有配置文件数据，供其他函数使用
+    window.allConfigSettings = allSettings;
 }
 
 // 加载设置
@@ -331,14 +497,7 @@ function loadSettings(settings) {
 }
 
 // 保存设置
-async function saveSettings() {
-    const settingsInputs = document.querySelectorAll('#settings-editor input');
-    const settings = {};
-    
-    settingsInputs.forEach(input => {
-        settings[input.dataset.key] = input.value;
-    });
-    
+async function saveSettings(fileName) {
     // 获取当前解压路径
     const pathInput = document.getElementById('pathInput').value;
     if (!pathInput) {
@@ -351,6 +510,25 @@ async function saveSettings() {
         ? pathInput.substring(0, pathInput.length - 4)  // 去掉.zip扩展名
         : pathInput;
     
+    // 如果指定了文件名，则只保存该文件的设置
+    // 否则保存所有设置（兼容旧版本行为）
+    let settingsToSave = {};
+    let targetFileName = fileName || 'value.yml';
+    
+    if (fileName) {
+        // 获取特定文件的所有输入框
+        const fileInputs = document.querySelectorAll(`#settings-editor input[data-file="${fileName}"]`);
+        fileInputs.forEach(input => {
+            settingsToSave[input.dataset.key] = input.value;
+        });
+    } else {
+        // 兼容旧版本，获取所有输入框
+        const settingsInputs = document.querySelectorAll('#settings-editor input');
+        settingsInputs.forEach(input => {
+            settingsToSave[input.dataset.key] = input.value;
+        });
+    }
+    
     try {
         // 使用正确的API端点并包装settings对象
         const response = await fetch(`/api/save_setting?dir_path=${encodeURIComponent(dirPath)}`, {
@@ -358,16 +536,42 @@ async function saveSettings() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ settings: settings })  // 将settings包装在settings字段中，符合后端SaveSettingsRequest结构
+            body: JSON.stringify({ 
+                file_name: targetFileName,
+                settings: settingsToSave 
+            })
         });
         
         const text = await response.text();
         
         if (response.ok) {
-            alert('设置已保存');
-            console.log('保存配置成功:', text);
+            alert(`设置已保存到 ${targetFileName}`);
+            console.log(`保存配置成功 (${targetFileName}):`, text);
             // 标记配置已成功保存
             window.configSaved = true;
+            
+            // 保存成功后重新加载配置信息
+            try {
+                // 记住当前的文件索引，以便在刷新后保持在同一页
+                const currentIndex = window.currentFileIndex || 0;
+                
+                // 调用find_settings API获取最新配置信息
+                const settingsResponse = await fetch(`/api/find_settings?dir_path=${encodeURIComponent(dirPath)}`);
+                if (settingsResponse.ok) {
+                    const settingsData = await settingsResponse.json();
+                    
+                    // 重新加载配置，保持当前页面索引
+                    window.currentFileIndex = currentIndex;
+                    loadMultiSettings(settingsData);
+                    
+                    console.log('配置已刷新');
+                } else {
+                    const errorText = await settingsResponse.text();
+                    console.error(`刷新配置失败: ${errorText}`);
+                }
+            } catch (error) {
+                console.error(`刷新配置出错: ${error.message}`);
+            }
         } else {
             alert('保存失败: ' + text);
             console.error('保存配置失败:', text);
@@ -382,11 +586,55 @@ async function saveSettings() {
     }
 }
 
+// 保存所有设置
+async function saveAllSettings() {
+    // 获取所有配置文件名
+    const fileNames = new Set();
+    document.querySelectorAll('#settings-editor input').forEach(input => {
+        if (input.dataset.file) {
+            fileNames.add(input.dataset.file);
+        }
+    });
+    
+    // 如果没有找到配置文件，使用默认的保存方式
+    if (fileNames.size === 0) {
+        saveSettings();
+        return;
+    }
+    
+    // 依次保存每个配置文件
+    let allSuccess = true;
+    for (const fileName of fileNames) {
+        try {
+            await saveSettings(fileName);
+        } catch (error) {
+            allSuccess = false;
+            console.error(`保存 ${fileName} 失败:`, error);
+        }
+    }
+    
+    // 提示保存结果
+    if (allSuccess) {
+        alert('所有配置文件已保存');
+    } else {
+        alert('部分配置文件保存失败，请查看控制台获取详细信息');
+    }
+}
+
 // 开始安装
 async function startInstall() {
     // 检查配置是否已保存
     if (!window.configSaved) {
         alert('请对当前配置保存');
+        return;
+    }
+    
+    // 获取选择的配置文件
+    const configFileSelect = document.getElementById('configFileSelect');
+    const selectedConfigFile = configFileSelect ? configFileSelect.value : null;
+    
+    if (!selectedConfigFile) {
+        alert('请选择要使用的配置文件');
         return;
     }
     
@@ -398,7 +646,7 @@ async function startInstall() {
     // 创建安装输出元素
     const installOutput = document.createElement('div');
     installOutput.className = 'install-output';
-    installOutput.textContent = '开始安装...\n';
+    installOutput.textContent = `开始安装...\n使用配置文件: ${selectedConfigFile}\n`;
     
     // 重置进度条
     progressBar.style.width = '0%';
@@ -430,7 +678,10 @@ async function startInstall() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ dir_path: dirPath })
+            body: JSON.stringify({ 
+                dir_path: dirPath,
+                config_file: selectedConfigFile  // 添加选择的配置文件
+            })
         });
         
         if (!componentsResponse.ok) {
@@ -451,7 +702,10 @@ async function startInstall() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ dir_path: dirPath })
+            body: JSON.stringify({ 
+                dir_path: dirPath,
+                config_file: selectedConfigFile  // 添加选择的配置文件
+            })
         });
         
         const reader = response.body.getReader();

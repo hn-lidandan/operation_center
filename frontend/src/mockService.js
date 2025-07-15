@@ -77,6 +77,30 @@ const mockDataStore = {
       };
     }
   },
+
+  // 添加查找多个设置文件API - GET方式
+  '/api/find_settings': {
+    GET: (params) => {
+      console.log('Mock: 查找多个设置文件(GET)', params);
+      return {
+        json: {
+          "value.yml": {
+            "host": "localhost",
+            "port": "8080",
+            "username": "admin",
+            "password": "******",
+            "db_name": "operation_center"
+          },
+          "advanced.yml": {
+            "log_level": "info",
+            "auto_start": "true",
+            "backup_enabled": "true",
+            "max_log_size": "100MB"
+          }
+        }
+      };
+    }
+  },
   
   // 新增历史版本API
   '/api/history_version': {
@@ -125,10 +149,14 @@ const mockDataStore = {
   '/api/setup': {
     POST: (params, body) => {
       console.log('Mock: 安装设置', params, body);
+      // 获取选择的配置文件
+      const configFile = body.config_file || 'value.yml';
+      console.log('使用配置文件:', configFile);
+      
       // 这个API需要返回流式响应
       return {
         stream: [
-          { text: "开始安装...\n", delay: 300 },
+          { text: `开始安装...\n使用配置文件: ${configFile}\n`, delay: 300 },
           { text: "组件: 核心组件 1.0.0\n", delay: 800 },
           { text: "- 复制文件...\n", delay: 600 },
           { text: "- 配置组件...\n", delay: 700 },
@@ -154,6 +182,10 @@ const mockDataStore = {
   '/api/setup/components': {
     POST: (params, body) => {
       console.log('Mock: 获取安装组件信息', params, body);
+      // 获取选择的配置文件
+      const configFile = body.config_file || 'value.yml';
+      console.log('使用配置文件:', configFile);
+      
       return {
         json: {
           success: true,

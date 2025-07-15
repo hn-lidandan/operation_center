@@ -568,8 +568,13 @@
                             </div>
                             
                             <!-- 3. 按钮区域移至框框下方 -->
-                            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                                <button onclick="saveSettings()" class="btn">保存配置</button>
+                            <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 20px;">
+                                <div style="display: flex; align-items: center; margin-right: auto;">
+                                    <label style="margin-right: 10px; font-weight: bold;">选择配置文件:</label>
+                                    <select id="configFileSelect" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px;">
+                                        <!-- 选项将通过JavaScript动态生成 -->
+                                    </select>
+                                </div>
                                 <button onclick="startInstall()" class="btn">安装</button>
                             </div>
                         </div>
