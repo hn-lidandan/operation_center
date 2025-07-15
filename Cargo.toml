@@ -17,6 +17,7 @@ simple-log = "2.3.0"
 tracing = "0.1.41" # 日志配置
 config = "0.13.3"  # 配置文件处理
 walkdir = "2.4.0"  # 目录遍历
+indexmap = { version = "2.0.0", features = ["serde"] }  # 有序哈希表
 
 
 sea-orm = { version = "1.1.12", features = [
