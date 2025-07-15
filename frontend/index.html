@@ -519,7 +519,8 @@
             <div class="sidebar">
                 <!-- 菜单作为多边形镶嵌在界面上 -->
                 <ul class="sidebar-menu" id="sidebar-menu">
-                    <li id="menu-init" class="active" onclick="switchTab('init')">配置初始化</li>
+                    <li id="menu-init" class="active" onclick="switchTab('init')">安装包载入</li>
+                    <li id="menu-config" onclick="switchTab('config')">配置本地化</li>
                     <li id="menu-execute" onclick="switchTab('execute')">执行安装</li>
                     <li id="menu-upgrade-prepare" style="display: none;" onclick="switchTab('upgrade-prepare')">升级准备</li>
                     <li id="menu-upgrade" style="display: none;" onclick="switchTab('upgrade')">升级</li>
@@ -539,20 +540,39 @@
                             <div id="result" class="result"></div>
                         </div>
                     </div>
+                    <!-- 添加下一步按钮，初始状态为禁用 -->
+                    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <button id="nextButton" onclick="goToConfig()" class="btn" disabled>下一步</button>
+                    </div>
                 </div>
                 
-                <div class="settings-content">
-                    <div class="form-group">
-                        <label class="label wide-label">配置本地化信息：</label>
-                    </div>
-                    <div class="settings-container">
-                        <div id="settings-editor" class="settings-editor">
-                            <!-- 设置项将在这里动态生成 -->
+                <div class="settings-content" style="display: none;">
+                    <!-- 这部分内容已移至配置本地化页面 -->
+                </div>
+                
+                <!-- 配置本地化的内容区域 -->
+                <div class="config-content" style="display: none; padding: 40px; height: 100%;">
+                    <div style="width: 100%; height: 100%;">
+                        <!-- 内容区域 -->
+                        <div style="width: 100%;">
+                            <!-- 1. "配置本地化信息"在顶部 -->
+                            <div style="margin-bottom: 20px; font-size: 24px; font-weight: bold;">
+                                配置本地化信息
+                            </div>
+                            
+                            <!-- 2. 框框在"配置本地化信息"的下方，占据大部分空间 -->
+                            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 20px; width: 100%; height: 70%; min-height: 400px; margin-bottom: 20px; background-color: white;">
+                                <div id="settings-editor" style="width: 100%; height: 100%; overflow-y: auto;">
+                                    <!-- 设置项将在这里动态生成 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 3. 按钮区域移至框框下方 -->
+                            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                                <button onclick="saveSettings()" class="btn">保存配置</button>
+                                <button onclick="startInstall()" class="btn">安装</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="buttons-container">
-                        <button onclick="saveSettings()" class="btn">保存配置</button>
-                        <button onclick="startInstall()" class="btn">安装</button>
                     </div>
                 </div>
                 

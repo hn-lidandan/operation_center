@@ -15,6 +15,8 @@ const api = axios.create({
 window.currentTab = 'init';
 // 全局变量存储当前顶部选项卡
 window.currentTopTab = 'setup';
+// 全局变量标记安装包是否已成功载入
+window.packageLoaded = false;
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
@@ -56,9 +58,9 @@ function updateSidebarMenuByTopTab(topTabId) {
     const menuItems = document.querySelectorAll('.sidebar-menu li');
     
     if (topTabId === 'setup') {
-        // 显示"配置初始化"和"执行安装"，隐藏"升级准备"和"升级"
+        // 显示"安装包载入"、"配置本地化"和"执行安装"，隐藏"升级准备"和"升级"
         menuItems.forEach(item => {
-            if (item.id === 'menu-init' || item.id === 'menu-execute') {
+            if (item.id === 'menu-init' || item.id === 'menu-config' || item.id === 'menu-execute') {
                 item.style.display = 'block';
             } else {
                 item.style.display = 'none';
@@ -98,6 +100,7 @@ function switchTab(tabId) {
     // 隐藏所有内容区域
     document.querySelector('.main-content').style.display = 'none';
     document.querySelector('.settings-content').style.display = 'none';
+    document.querySelector('.config-content').style.display = 'none';
     document.querySelector('.execute-content').style.display = 'none';
     document.querySelector('.upgrade-prepare-content').style.display = 'none';
     document.querySelector('.upgrade-content').style.display = 'none';
@@ -105,11 +108,39 @@ function switchTab(tabId) {
     // 根据选择的标签页显示对应内容
     if (tabId === 'init') {
         document.querySelector('.main-content').style.display = 'flex';
-        document.querySelector('.settings-content').style.display = 'flex';
         document.getElementById('menu-init').classList.add('active');
         // 确保顶部选项卡为"Setup"
         if (window.currentTopTab !== 'setup') {
             switchTopTab('setup');
+        }
+    } else if (tabId === 'config') {
+        document.querySelector('.config-content').style.display = 'flex';
+        document.getElementById('menu-config').classList.add('active');
+        // 确保顶部选项卡为"Setup"
+        if (window.currentTopTab !== 'setup') {
+            switchTopTab('setup');
+        }
+        
+        // 如果配置编辑器为空，尝试加载配置
+        const configEditor = document.getElementById('settings-editor');
+        if (configEditor && configEditor.children.length === 0) {
+            // 获取当前解压路径
+            const pathInput = document.getElementById('pathInput').value;
+            if (pathInput) {
+                const dirPath = pathInput.endsWith('.zip') 
+                    ? pathInput.substring(0, pathInput.length - 4)
+                    : pathInput;
+                
+                // 尝试获取配置信息
+                fetch(`/api/find_setting_file?dir_path=${encodeURIComponent(dirPath)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        loadSettings(data);
+                    })
+                    .catch(error => {
+                        console.error('获取配置信息失败:', error);
+                    });
+            }
         }
     } else if (tabId === 'execute') {
         document.querySelector('.execute-content').style.display = 'flex';
@@ -168,6 +199,12 @@ async function handleProcess() {
     document.getElementById('loading').style.display = 'block';
     document.getElementById('result').textContent = '处理中...';
     
+    // 确保下一步按钮处于禁用状态
+    document.getElementById('nextButton').disabled = true;
+    
+    // 重置安装包载入状态
+    window.packageLoaded = false;
+    
     try {
         // 1. 调用解压API
         const unzipResponse = await fetch('/api/unzip', {
@@ -200,6 +237,13 @@ async function handleProcess() {
                     resultElement.textContent = versionInfo;
                     resultElement.style.whiteSpace = 'pre-wrap'; // 保留换行符
                     console.log('版本信息已加载:', versionInfo);
+                    
+                    // 启用下一步按钮
+                    document.getElementById('nextButton').disabled = false;
+                    
+                    // 标记安装包已成功载入
+                    window.packageLoaded = true;
+                    console.log('安装包已成功载入，packageLoaded =', window.packageLoaded);
                 } else {
                     const errorText = await infoResponse.text();
                     document.getElementById('result').textContent = `获取版本信息失败: ${errorText}`;
@@ -245,28 +289,42 @@ function loadSettings(settings) {
         return;
     }
     
+    const settingsTable = document.createElement('div');
+    settingsTable.style.width = '100%';
+    
     for (const key in settings) {
         const row = document.createElement('div');
         row.className = 'settings-row';
+        row.style.display = 'flex';
+        row.style.marginBottom = '15px';
+        row.style.alignItems = 'center';
         
         const keyElement = document.createElement('div');
-        keyElement.className = 'settings-key';
+        keyElement.style.width = '250px';
+        keyElement.style.fontWeight = 'bold';
+        keyElement.style.paddingRight = '15px';
         keyElement.textContent = key;
         
         const valueElement = document.createElement('input');
-        valueElement.className = 'settings-value';
+        valueElement.style.flexGrow = '1';
+        valueElement.style.padding = '8px';
+        valueElement.style.border = '1px solid #ccc';
+        valueElement.style.borderRadius = '4px';
+        valueElement.style.fontSize = '16px';
         valueElement.value = settings[key];
         valueElement.dataset.key = key;
         
         row.appendChild(keyElement);
         row.appendChild(valueElement);
-        settingsEditor.appendChild(row);
+        settingsTable.appendChild(row);
     }
+    
+    settingsEditor.appendChild(settingsTable);
 }
 
 // 保存设置
 async function saveSettings() {
-    const settingsInputs = document.querySelectorAll('.settings-value');
+    const settingsInputs = document.querySelectorAll('#settings-editor input');
     const settings = {};
     
     settingsInputs.forEach(input => {
@@ -876,6 +934,35 @@ async function saveUpgradeSettings() {
     }
 }
 
+// 添加新函数：跳转到配置本地化界面
+function goToConfig() {
+    console.log('检查安装包载入状态:', window.packageLoaded);
+    
+    // 检查安装包是否已成功载入
+    if (!window.packageLoaded) {
+        alert('请先在"安装包载入"页面载入安装包');
+        return;
+    }
+    
+    // 切换到配置本地化标签页
+    switchTab('config');
+}
+
+// 添加新函数：跳转到执行安装界面
+function goToExecute() {
+    console.log('检查安装包载入状态:', window.packageLoaded);
+    
+    // 检查安装包是否已成功载入
+    if (!window.packageLoaded) {
+        alert('请先在"安装包载入"页面载入安装包');
+        switchTab('init'); // 切换到安装包载入页面
+        return;
+    }
+    
+    // 切换到执行安装标签页
+    switchTab('execute');
+}
+
 // 导出函数到全局作用域，以便HTML中调用
 window.switchTab = switchTab;
 window.handleProcess = handleProcess;
@@ -886,3 +973,5 @@ window.startUpgrade = startUpgrade;
 window.nextUpgradeStep = nextUpgradeStep;
 window.saveUpgradeSettings = saveUpgradeSettings; // 导出保存升级设置函数
 window.switchTopTab = switchTopTab; // 导出顶部选项卡切换函数
+window.goToConfig = goToConfig; // 导出跳转到配置本地化界面的函数
+window.goToExecute = goToExecute; // 导出跳转到执行安装界面的函数
