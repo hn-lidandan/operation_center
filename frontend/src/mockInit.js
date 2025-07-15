@@ -3,10 +3,12 @@
 
 import { mockFetch, createMockSwitch, mockConfig } from './mockService.js';
 
-// 拦截全局fetch
+// 保存原始fetch函数
 const originalFetch = window.fetch;
+
+// 拦截全局fetch
 window.fetch = function(url, options) {
-  return mockFetch(url, options);
+  return mockFetch(url, options, originalFetch);
 };
 
 // 在页面加载完成后添加开关UI

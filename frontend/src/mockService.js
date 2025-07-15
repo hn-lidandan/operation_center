@@ -44,7 +44,7 @@ const mockDataStore = {
   },
   
   // 查找设置文件API - GET方式
-  '/api/find_settings': {
+  '/api/find_setting': {
     GET: (params) => {
       console.log('Mock: 查找设置文件(GET)', params);
       return {
@@ -105,7 +105,7 @@ const mockDataStore = {
   },
   
   // 保存设置API
-  '/api/save_settings': {
+  '/api/save_setting': {
     POST: (params, body) => {
       console.log('Mock: 保存设置', params, body);
       // 记录保存的设置，以便在下次加载时显示
@@ -365,11 +365,11 @@ async function createMockResponse(url, options = {}) {
 }
 
 // Mock服务的fetch拦截器
-export async function mockFetch(url, options = {}) {
+export async function mockFetch(url, options = {}, originalFetchFunction) {
   // 判断是否启用mock
   if (!mockConfig.enabled) {
-    // 未启用mock，使用真实fetch
-    return fetch(url, options);
+    // 未启用mock，使用原始fetch函数（而不是window.fetch）
+    return originalFetchFunction(url, options);
   }
   
   // 添加随机延迟，模拟网络请求
@@ -407,20 +407,47 @@ export function createMockSwitch() {
   status.style.fontWeight = 'bold';
   switchContainer.appendChild(status);
   
+  // 添加刷新按钮
+  const refreshButton = document.createElement('button');
+  refreshButton.textContent = '刷新页面';
+  refreshButton.style.marginLeft = '10px';
+  refreshButton.style.padding = '3px 8px';
+  refreshButton.style.border = 'none';
+  refreshButton.style.borderRadius = '3px';
+  refreshButton.style.backgroundColor = '#4CAF50';
+  refreshButton.style.color = 'white';
+  refreshButton.style.cursor = 'pointer';
+  refreshButton.style.display = 'none'; // 默认隐藏
+  refreshButton.addEventListener('click', () => {
+    window.location.reload();
+  });
+  switchContainer.appendChild(refreshButton);
+  
   // 更新开关状态显示
   function updateSwitchStatus() {
     status.textContent = mockConfig.enabled ? '开启' : '关闭';
     status.style.color = mockConfig.enabled ? '#4CAF50' : '#F44336';
+    
+    // 在页面标题中显示状态
+    document.title = document.title.replace(/ \[(MOCK|REAL)\]$/, '');
+    document.title += mockConfig.enabled ? ' [MOCK]' : ' [REAL]';
   }
   
   // 初始化状态
   updateSwitchStatus();
   
   // 添加点击事件
-  switchContainer.addEventListener('click', () => {
+  switchContainer.addEventListener('click', (e) => {
+    // 如果点击的是刷新按钮，不处理（由按钮自己的事件处理）
+    if (e.target === refreshButton) return;
+    
     mockConfig.enabled = !mockConfig.enabled;
     updateSwitchStatus();
     console.log(`Mock服务已${mockConfig.enabled ? '开启' : '关闭'}`);
+    
+    // 显示提示和刷新按钮
+    alert(`Mock服务已${mockConfig.enabled ? '开启' : '关闭'}，需要刷新页面以生效！`);
+    refreshButton.style.display = 'block';
   });
   
   return switchContainer;

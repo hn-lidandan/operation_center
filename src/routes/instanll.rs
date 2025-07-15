@@ -14,7 +14,7 @@ async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello Rust Web!")
 }
 
-#[get("/find_info_file")]
+#[get("/current_version")]
 async fn find_info_file(path: web::Query<FilePathRequest>) -> impl Responder {
     // 1. 构建完整的文件路径
     let file_path = Path::new(&path.dir_path).join("version.txt");
@@ -51,10 +51,10 @@ async fn find_setting(path: web::Query<FilePathRequest>) -> impl Responder {
     // 读取文件内容
     match fs::read_to_string(&file_path) {
         Ok(contents) => {
-            // 解析 YAML 内容为 HashMap
-            match serde_yaml::from_str::<HashMap<String, String>>(&contents) {
+            // 解析 YAML 内容为 IndexMap 保持顺序
+            match serde_yaml::from_str::<IndexMap<String, String>>(&contents) {
                 Ok(yaml_map) => {
-                    // 将 HashMap 转换为 JSON 返回
+                    // 将 IndexMap 转换为 JSON 返回
                     match serde_json::to_string(&yaml_map) {
                         Ok(json_str) => HttpResponse::Ok()
                             .content_type("application/json")

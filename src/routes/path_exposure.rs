@@ -1,5 +1,5 @@
 use crate::routes::command::{cmd_localize, cmd_setup, cmd_unzip};
-use crate::routes::instanll::{find_info_file, find_settings, index, save_setting};
+use crate::routes::instanll::{find_info_file, find_settings,find_setting, index, save_setting};
 use crate::routes::maintask::{get_maintasks,get_maintask_by_id,create_main_task};
 use crate::routes::subtask::{get_subtask,get_subtasks_by_parentid,create_batch_subtask,update_subtask_info,create_failed_subtask};
 use crate::routes::update::{bakeup};
@@ -10,6 +10,7 @@ pub fn path_config(service_config: &mut web::ServiceConfig) {
         //install
         .service(index)
         .service(find_info_file)
+        .service(find_setting)
         .service(find_settings)
         .service(save_setting)
         //command
